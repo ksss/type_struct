@@ -113,15 +113,15 @@ module TypeStructTest
   def example_readme
     sample = Sample.new(
       str: "instance of String",
-      reg: "not match to regexp",
+      reg: "match to regexp",
       num: 10,
       any: true,
     )
     p sample
     p sample.to_h
     # Output:
-    # #<TypeStructTest::Sample str="instance of String", reg="not match to regexp", num=10, any=true>
-    # {:str=>"instance of String", :reg=>"not match to regexp", :num=>10, :any=>true}
+    # #<TypeStructTest::Sample str="instance of String", reg="match to regexp", num=10, any=true>
+    # {:str=>"instance of String", :reg=>"match to regexp", :num=>10, :any=>true}
   end
 
   private

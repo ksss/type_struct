@@ -16,13 +16,13 @@ class Sample < TypeStruct.new(
 
 sample = Sample.new(
   str: "instance of String",
-  reg: "not match to regexp",
+  reg: "match to regexp",
   num: 10,
   any: true,
 )
 
 p sample
-#=> #<TypeStructTest::Sample str="instance of String", reg="not match to regexp", num=10, any=true>
+#=> #<Sample str="instance of String", reg="not match to regexp", num=10, any=true>
 
 p sample.to_h
 #=> {:str=>"instance of String", :reg=>"not match to regexp", :num=>10, :any=>true}
