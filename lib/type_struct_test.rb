@@ -77,7 +77,16 @@ module TypeStructTest
     if err != nil
       t.error("expect not raise error when valid value get. got #{err}")
     end
+    _, err = go { dummy.str }
+    if err != nil
+      t.error("expect not raise error when valid value get. got #{err}")
+    end
+
     _, err = go { dummy[:nothing] }
+    if err == nil
+      t.error("expect not raise error when invalid value get")
+    end
+    _, err = go { dummy.nothing }
     if err == nil
       t.error("expect not raise error when invalid value get")
     end
@@ -90,14 +99,26 @@ module TypeStructTest
       if err == nil
         t.error("expect raise error when invalid value set")
       end
+      _, err = go { dummy.__send__("#{k}=", nil) }
+      if err == nil
+        t.error("expect raise error when invalid value set")
+      end
     end
 
     _, err = go { dummy[:any] = nil }
     if err != nil
       t.error("expect not raise error when valid value set got #{err}")
     end
+    _, err = go { dummy.any = nil }
+    if err != nil
+      t.error("expect not raise error when valid value set got #{err}")
+    end
 
     _, err = go { dummy[:nothing] = nil }
+    if err == nil
+      t.error("expect not raise error when valid value set got #{err}")
+    end
+    _, err = go { dummy.nothing = nil }
     if err == nil
       t.error("expect not raise error when valid value set got #{err}")
     end
