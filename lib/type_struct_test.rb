@@ -15,6 +15,7 @@ module TypeStructTest
   ); end
 
   class Foo < TypeStruct.new(
+    nil: { type: NilClass, nilable: true },
     bar: Bar,
   ); end
 
@@ -27,15 +28,18 @@ module TypeStructTest
     end
 
     begin
-      foo = Foo.from_hash(bar: { baz: [1, 2, 3], qux: { str: "str" } })
-      unless TypeStruct === foo
-        t.error("return value type was break")
-      end
-      unless Foo === foo
-        t.error("return value type was break")
-      end
-    rescue => e
-      t.error("Bar.baz is able to integers but raise error #{e.class}: #{e.message}")
+      Foo.from_hash(bar: { baz: [1, 2, 3] , qux: { str: "str" } }, nil: 1)
+    rescue TypeError
+    else
+      t.error("Bar.qux is not able to nil but accepted")
+    end
+
+    foo = Foo.from_hash(bar: { baz: [1, 2, 3], qux: { str: "str" } }, nil: nil)
+    unless TypeStruct === foo
+      t.error("return value type was break")
+    end
+    unless Foo === foo
+      t.error("return value type was break")
     end
 
     begin

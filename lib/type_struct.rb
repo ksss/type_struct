@@ -41,13 +41,15 @@ class TypeStruct
 
   class << self
     def from_hash(h)
-      h.map { |k, v|
-        if members[k].ancestors.include?(TypeStruct)
-          new(k => members[k].new(v))
+      args = {}
+      h.each { |k, v|
+        if type(k).ancestors.include?(TypeStruct)
+          args[k] = type(k).new(v)
         else
-          new k => v
+          args[k] = v
         end
-      }.first
+      }
+      new(args)
     end
 
     def members
