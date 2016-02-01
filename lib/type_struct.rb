@@ -81,9 +81,7 @@ class TypeStruct
         const_set :MEMBERS, args
 
         class << self
-          def new(*args)
-            original_new(*args)
-          end
+          alias new original_new
         end
 
         args.keys.each do |k, _|
