@@ -34,13 +34,13 @@ module TypeStructTest
       unless Foo === foo
         t.error("return value type was break")
       end
-    rescue
+    rescue => e
       t.error("Bar.baz is able to integers but raise error #{e.class}: #{e.message}")
     end
 
     begin
       Foo.from_hash(bar: { baz: [1, nil, 3], qux: { str: "str" } })
-    rescue
+    rescue => e
       t.error("Bar.baz is able to nil but raise error #{e.class}: #{e.message}")
     end
 
