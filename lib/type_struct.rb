@@ -55,11 +55,16 @@ class TypeStruct
     end
 
     def type(k)
-      members[k]
+      t = members[k]
+      if Hash === t
+        t[:type]
+      else
+        t
+      end
     end
 
     def valid?(k, v)
-      t = type(k)
+      t = members[k]
       unless Hash === t
         t = { type: t, nilable: false }
       end

@@ -79,8 +79,13 @@ module TypeStructTest
   def test_s_type(t)
     m = Dummy.members
     m.each do |k, v|
-      unless Dummy.type(k) == v
-        t.error("expect #{v} got #{Dummy.type(k)}")
+      type = Dummy.type(k)
+      if v.respond_to?(:[])
+        if type != v[:type]
+          t.error("expect #{v[:type]} got #{type}")
+        end
+      elsif type != v
+        t.error("expect #{v} got #{type}")
       end
     end
   end
