@@ -5,12 +5,72 @@ module TypeStructTest
     str: String,
     num: Integer,
     reg: /abc/,
+    ary: { type: [Integer, Float], nilable: true },
     any: Object,
   ); end
 
+  class Bar < TypeStruct.new(
+    baz: [Integer, NilClass],
+    qux: Hash,
+  ); end
+
+  class Foo < TypeStruct.new(
+    bar: Bar,
+  ); end
+
+  def test_s_from_hash(t)
+    begin
+      Foo.from_hash(bar: { baz: [1, 2, 3] })
+    rescue TypeError
+    else
+      t.error("Bar.qux is not able to nil but accepted")
+    end
+
+    begin
+      foo = Foo.from_hash(bar: { baz: [1, 2, 3], qux: { str: "str" } })
+      unless TypeStruct === foo
+        t.error("return value type was break")
+      end
+      unless Foo === foo
+        t.error("return value type was break")
+      end
+    rescue
+      t.error("Bar.baz is able to integers but raise error #{e.class}: #{e.message}")
+    end
+
+    begin
+      Foo.from_hash(bar: { baz: [1, nil, 3], qux: { str: "str" } })
+    rescue
+      t.error("Bar.baz is able to nil but raise error #{e.class}: #{e.message}")
+    end
+
+    begin
+      Foo.from_hash(bar: { baz: nil, qux: { str: "str" } })
+    rescue TypeError
+    else
+      t.error('Bar.baz is not able to nil')
+    end
+
+    expect = Foo.new(bar: Bar.new(baz: [1, 2, 3], qux: { str: "str" }))
+    actual = Foo.from_hash(bar: { baz: [1, 2, 3], qux: { str: "str" } })
+    if expect != actual
+      t.error("expect #{expect} got #{actual}")
+    end
+
+    noteq = Foo.from_hash(bar: { baz: [1, 2, 4], qux: { str: "str" } })
+    if expect == noteq
+      t.error("expect #{expect} not equal #{noteq}")
+    end
+
+    noteq = Foo.from_hash(bar: { baz: [1, 2, nil], qux: { str: "str" } })
+    if expect == noteq
+      t.error("expect #{expect} not equal #{noteq}")
+    end
+  end
+
   def test_s_members(t)
     m = Dummy.members
-    expect = {str: String, num: Integer, reg: /abc/, any: Object}
+    expect = { str: String, num: Integer, reg: /abc/, ary: { type: [Integer, Float], nilable: true }, any: Object }
     unless m == expect
       t.error("expect #{expect} got #{m}")
     end
@@ -38,12 +98,24 @@ module TypeStructTest
   end
 
   def test_initialize(t)
-    expects = {str: "aaa", num: 123, reg: "abc", any: [1, "bbb"]}
-    dummy = Dummy.new(str: "aaa", num: 123, reg: "abc", any: [1, "bbb"])
+    expects = { str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'] }
+    dummy = Dummy.new(str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
     expects.each do |k, v|
       unless dummy[k] == v
         t.error("expect #{dummy[k]} got #{v}")
       end
+    end
+  end
+
+  def test_eq(t)
+    dummy1 = Dummy.new(str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
+    dummy2 = Dummy.new(str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
+    dummy3 = Dummy.new(str: 'bbb', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
+    unless dummy1 == dummy2
+      t.error('members not equal')
+    end
+    unless dummy1 != dummy3
+      t.error('members equal')
     end
   end
 
