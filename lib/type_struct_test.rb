@@ -74,15 +74,14 @@ module TypeStructTest
 
   def test_s_members(t)
     m = Dummy.members
-    expect = { str: String, num: Integer, reg: /abc/, ary: { type: [Integer, Float], nilable: true }, any: Object }
+    expect = [:str, :num, :reg, :ary, :any]
     unless m == expect
       t.error("expect #{expect} got #{m}")
     end
   end
 
   def test_s_type(t)
-    m = Dummy.members
-    m.each do |k, v|
+    Dummy.definition.each do |k, v|
       type = Dummy.type(k)
       if v.respond_to?(:[])
         if type != v[:type]

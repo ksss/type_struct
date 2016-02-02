@@ -5,7 +5,7 @@ class TypeStruct
   end
 
   def initialize(**arg)
-    self.class.members.each do |k, _|
+    self.class.members.each do |k|
       self[k] = arg[k]
     end
   end
@@ -33,7 +33,7 @@ class TypeStruct
 
   def to_h
     m = {}
-    self.class.members.each do |k, _|
+    self.class.members.each do |k|
       m[k] = self[k]
     end
     m
@@ -52,12 +52,16 @@ class TypeStruct
       new(args)
     end
 
+    def definition
+      const_get(:DEFINITION)
+    end
+
     def members
-      const_get(:MEMBERS)
+      definition.keys
     end
 
     def type(k)
-      t = members[k]
+      t = definition[k]
       if Hash === t
         t[:type]
       else
@@ -66,7 +70,7 @@ class TypeStruct
     end
 
     def valid?(k, v)
-      t = members[k]
+      t = definition[k]
       unless Hash === t
         t = { type: t, nilable: false }
       end
@@ -85,7 +89,7 @@ class TypeStruct
     alias original_new new
     def new(**args)
       Class.new(TypeStruct) do
-        const_set :MEMBERS, args
+        const_set :DEFINITION, args
 
         class << self
           alias new original_new
