@@ -42,7 +42,7 @@ class TypeStruct
   class << self
     def from_hash(h)
       args = {}
-      h.each { |k, v|
+      h.each do |k, v|
         t = type(k)
         if t.respond_to?(:members) && v.keys == t.members
           a = t.ancestors
@@ -58,7 +58,7 @@ class TypeStruct
         else
           args[k] = v
         end
-      }
+      end
       new(args)
     end
 

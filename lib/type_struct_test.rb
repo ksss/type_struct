@@ -1,4 +1,4 @@
-require 'type_struct'
+require "type_struct"
 
 module TypeStructTest
   class Dummy < TypeStruct.new(
@@ -57,7 +57,7 @@ module TypeStructTest
       Foo.from_hash(bar: { baz: nil })
     rescue TypeError
     else
-      t.error('Bar.baz is not able to nil')
+      t.error("Bar.baz is not able to nil")
     end
   end
 
@@ -102,16 +102,14 @@ module TypeStructTest
   end
 
   class NotImplType < TypeStruct.new(
-    a: NotImplVal
+    a: NotImplVal,
   ); end
 
   def test_s_from_hash_not_supprt_error(t)
-    begin
-      NotImplType.from_hash(a: {b: nil})
-    rescue NotImplementedError
-    rescue => e
-      t.error("unexpected error raise #{e.class}:#{e.message}")
-    end
+    NotImplType.from_hash(a: { b: nil })
+  rescue NotImplementedError
+  rescue => e
+    t.error("unexpected error raise #{e.class}:#{e.message}")
   end
 
   def test_s_members(t)
@@ -148,8 +146,8 @@ module TypeStructTest
   end
 
   def test_initialize(t)
-    expects = { str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'] }
-    dummy = Dummy.new(str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
+    expects = { str: "aaa", num: 123, reg: "abc", ary: [1.1, 1], any: [1, "bbb"] }
+    dummy = Dummy.new(str: "aaa", num: 123, reg: "abc", ary: [1.1, 1], any: [1, "bbb"])
     expects.each do |k, v|
       unless dummy[k] == v
         t.error("expect #{dummy[k]} got #{v}")
@@ -158,14 +156,14 @@ module TypeStructTest
   end
 
   def test_eq(t)
-    dummy1 = Dummy.new(str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
-    dummy2 = Dummy.new(str: 'aaa', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
-    dummy3 = Dummy.new(str: 'bbb', num: 123, reg: 'abc', ary: [1.1, 1], any: [1, 'bbb'])
+    dummy1 = Dummy.new(str: "aaa", num: 123, reg: "abc", ary: [1.1, 1], any: [1, "bbb"])
+    dummy2 = Dummy.new(str: "aaa", num: 123, reg: "abc", ary: [1.1, 1], any: [1, "bbb"])
+    dummy3 = Dummy.new(str: "bbb", num: 123, reg: "abc", ary: [1.1, 1], any: [1, "bbb"])
     unless dummy1 == dummy2
-      t.error('members not equal')
+      t.error("members not equal")
     end
     unless dummy1 != dummy3
-      t.error('members equal')
+      t.error("members equal")
     end
   end
 
@@ -184,7 +182,7 @@ module TypeStructTest
   end
 
   def test_to_h(t)
-    expects = {str: "aaa", num: 123, reg: "abcde", any: [1, "bbb"]}
+    expects = { str: "aaa", num: 123, reg: "abcde", any: [1, "bbb"] }
     dummy = Dummy.new(str: "aaa", num: 123, reg: "abcde", any: [1, "bbb"])
     expects.each do |k, v|
       unless dummy[k] == v
@@ -216,7 +214,7 @@ module TypeStructTest
 
   def test_setter(t)
     dummy = Dummy.new(str: "aaa", num: 123, reg: "abc", any: [1, "bbb"])
-    %i(str num reg).each do |k, v|
+    %i(str num reg).each do |k|
       _, err = go { dummy[k] = nil }
       if err == nil
         t.error("expect raise error when invalid value set")
@@ -250,7 +248,7 @@ module TypeStructTest
     str: String,
     reg: /exp/,
     num: Integer,
-    any: Object
+    any: Object,
   ); end
 
   def example_readme
