@@ -9,9 +9,16 @@ module TypeStructTest
     any: Object,
   ); end
 
+  class Quux < Struct.new(:q)
+  end
+
+  class Qux < TypeStruct.new(
+    quux1: Quux,
+    quux2: Quux,
+  ); end
+
   class Bar < TypeStruct.new(
     baz: [Integer, NilClass],
-    qux: Hash,
   ); end
 
   class Foo < TypeStruct.new(
@@ -20,21 +27,19 @@ module TypeStructTest
   ); end
 
   def test_s_from_hash(t)
+    foo = Foo.from_hash(bar: { baz: [1, 2, 3] })
+    unless Foo === foo
+      t.error("return value was break")
+    end
+
     begin
-      Foo.from_hash(bar: { baz: [1, 2, 3] })
+      Foo.from_hash(bar: { baz: [1, 2, 3] }, nil: 1)
     rescue TypeError
     else
       t.error("Bar.qux is not able to nil but accepted")
     end
 
-    begin
-      Foo.from_hash(bar: { baz: [1, 2, 3] , qux: { str: "str" } }, nil: 1)
-    rescue TypeError
-    else
-      t.error("Bar.qux is not able to nil but accepted")
-    end
-
-    foo = Foo.from_hash(bar: { baz: [1, 2, 3], qux: { str: "str" } }, nil: nil)
+    foo = Foo.from_hash(bar: { baz: [1, 2, 3] }, nil: nil)
     unless TypeStruct === foo
       t.error("return value type was break")
     end
@@ -43,32 +48,50 @@ module TypeStructTest
     end
 
     begin
-      Foo.from_hash(bar: { baz: [1, nil, 3], qux: { str: "str" } })
+      Foo.from_hash(bar: { baz: [1, nil, 3] })
     rescue => e
       t.error("Bar.baz is able to nil but raise error #{e.class}: #{e.message}")
     end
 
     begin
-      Foo.from_hash(bar: { baz: nil, qux: { str: "str" } })
+      Foo.from_hash(bar: { baz: nil })
     rescue TypeError
     else
       t.error('Bar.baz is not able to nil')
     end
+  end
 
-    expect = Foo.new(bar: Bar.new(baz: [1, 2, 3], qux: { str: "str" }))
-    actual = Foo.from_hash(bar: { baz: [1, 2, 3], qux: { str: "str" } })
+  def test_s_from_hash_equal(t)
+    expect = Foo.new(bar: Bar.new(baz: [1, 2, 3]))
+    actual = Foo.from_hash(bar: { baz: [1, 2, 3] })
     if expect != actual
       t.error("expect #{expect} got #{actual}")
     end
 
-    noteq = Foo.from_hash(bar: { baz: [1, 2, 4], qux: { str: "str" } })
+    noteq = Foo.from_hash(bar: { baz: [1, 2, 4] })
     if expect == noteq
       t.error("expect #{expect} not equal #{noteq}")
     end
 
-    noteq = Foo.from_hash(bar: { baz: [1, 2, nil], qux: { str: "str" } })
+    noteq = Foo.from_hash(bar: { baz: [1, 2, nil] })
     if expect == noteq
       t.error("expect #{expect} not equal #{noteq}")
+    end
+  end
+
+  def test_s_from_hash_with_struct(t)
+    qux = Qux.from_hash(quux1: { q: 1 }, quux2: { q: nil })
+    unless Qux === qux
+      t.error("return value was break")
+    end
+    unless Quux === qux.quux1
+      t.error("struct type was not applied")
+    end
+    unless 1 == qux.quux1.q
+      t.error("mapping failed #{qux.quux.q} != 1")
+    end
+    unless nil == qux.quux2.q
+      t.error("mapping failed #{qux.quux.q} != nil")
     end
   end
 

@@ -43,8 +43,15 @@ class TypeStruct
     def from_hash(h)
       args = {}
       h.each { |k, v|
-        if type(k).ancestors.include?(TypeStruct)
-          args[k] = type(k).new(v)
+        t = type(k)
+        if t.respond_to?(:members) && v.keys == t.members
+          if t.ancestors.include?(TypeStruct)
+            args[k] = t.new(v)
+          else
+            tt = t.new
+            v.each { |vk, vv| tt[vk] = vv }
+            args[k] = tt
+          end
         else
           args[k] = v
         end
