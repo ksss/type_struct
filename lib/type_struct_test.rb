@@ -95,6 +95,25 @@ module TypeStructTest
     end
   end
 
+  class NotImplVal
+    def self.members
+      [:b]
+    end
+  end
+
+  class NotImplType < TypeStruct.new(
+    a: NotImplVal
+  ); end
+
+  def test_s_from_hash_not_supprt_error(t)
+    begin
+      NotImplType.from_hash(a: {b: nil})
+    rescue NotImplementedError
+    rescue => e
+      t.error("unexpected error raise #{e.class}:#{e.message}")
+    end
+  end
+
   def test_s_members(t)
     m = Dummy.members
     expect = [:str, :num, :reg, :ary, :any]

@@ -45,12 +45,15 @@ class TypeStruct
       h.each { |k, v|
         t = type(k)
         if t.respond_to?(:members) && v.keys == t.members
-          if t.ancestors.include?(TypeStruct)
+          a = t.ancestors
+          if a.include?(TypeStruct)
             args[k] = t.new(v)
-          else
+          elsif a.include?(Struct)
             tt = t.new
             v.each { |vk, vv| tt[vk] = vv }
             args[k] = tt
+          else
+            raise NotImplementedError, "#{t} is not supported yet"
           end
         else
           args[k] = v
