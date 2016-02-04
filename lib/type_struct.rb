@@ -1,7 +1,5 @@
-require "union_ext"
+require "union"
 require "arrayof"
-
-using UnionExt
 
 class TypeStruct
   require "type_struct/version"
