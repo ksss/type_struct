@@ -1,11 +1,13 @@
 require "type_struct"
 
 module TypeStructTest
+  using UnionExt
+
   class Dummy < TypeStruct.new(
     str: String,
     num: Integer,
     reg: /abc/,
-    ary: { type: [Integer, Float], nilable: true },
+    ary: ArrayOf.new(Integer | Float) | NilClass,
     any: Object,
   ); end
 
@@ -18,17 +20,17 @@ module TypeStructTest
   ); end
 
   class Bar < TypeStruct.new(
-    baz: [Integer, NilClass],
+    baz: ArrayOf.new(Integer | NilClass),
   ); end
 
   class Foo < TypeStruct.new(
-    nil: { type: NilClass, nilable: true },
+    nil: NilClass,
     bar: Bar,
   ); end
 
   BoolClass = TrueClass | FalseClass
   C = TypeStruct.new(
-    a: ArrayOf.new(BoolClass)
+    a: ArrayOf.new(BoolClass),
   )
   B = TypeStruct.new(
     a: Integer,

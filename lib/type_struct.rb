@@ -5,10 +5,19 @@ class ArrayOf
     @type = type
   end
 
+  def |(other)
+    Union.new(self, other)
+  end
+
   def to_s
-    "#<ArrayOf [#{@type}]>"
+    "#<#{self.class} #{@type}>"
   end
   alias inspect to_s
+
+  def ===(other)
+    return false unless other.respond_to?(:any?)
+    other.any? { |o| @type === o }
+  end
 end
 
 class Union
@@ -20,8 +29,7 @@ class Union
   end
 
   def |(other)
-    @classes << other
-    self
+    Union.new(*@classes, other)
   end
 
   def ===(other)
@@ -29,16 +37,19 @@ class Union
   end
 
   def to_s
-    "#<#{self.class}(#{@classes.join('|')})>"
+    "#<#{self.class} #{@classes.join('|')}>"
   end
   alias inspect to_s
 end
 
-class Class
-  def |(other)
-    Union.new(self, other)
+module UnionExt
+  refine Class do
+    def |(other)
+      Union.new(self, other)
+    end
   end
 end
+using UnionExt
 
 class TypeStruct
   require "type_struct/version"
@@ -83,14 +94,16 @@ class TypeStruct
 
   class << self
     def try_convert(klass, value)
+      return nil unless klass
+
       if Union === klass
         klass.each { |k|
           t = try_convert(k, value)
-          if !t.nil?
-            return t
-          end
+          return t if !t.nil?
         }
         nil
+      elsif ArrayOf === klass
+        value.map { |v| try_convert(klass.type, v) }
       elsif klass.ancestors.include?(TypeStruct)
         klass.from_hash(value)
       elsif klass.ancestors.include?(Struct)
@@ -122,9 +135,13 @@ class TypeStruct
             args[key] = value
           end
         elsif ArrayOf === t
-          args[key] = value.map{ |v| try_convert(t.type, v) }
+          if value.respond_to?(:map)
+            args[key] = value.map { |v| try_convert(t.type, v) }
+          else
+            args[key] = value
+          end
         else
-          args[key] = value
+          args[key] = try_convert(t, value)
         end
       end
       new(args)
@@ -155,21 +172,17 @@ class TypeStruct
 
     def valid?(k, v)
       t = definition[k]
-      unless Hash === t
-        t = { type: t, nilable: false }
-      end
-      if ArrayOf === t[:type] && Array === v
-        return v.all? { |vv| t[:type].type === vv }
-      end
-      if t[:nilable] == true && v.nil?
-        true
-      elsif Array === t[:type]
+      if ArrayOf === t && Array === v
+        v.all? { |vv| t.type === vv }
+      elsif Union === t
+        t === v
+      elsif Array === t
         return false if v.nil?
-        v.all? { |i| t[:type].any? { |c| c === i } }
+        v.all? { |i| t.any? { |c| c === i } }
       elsif TypeStruct === v
-        t[:type] == v.class
+        t == v.class
       else
-        t[:type] === v
+        t === v
       end
     end
 
