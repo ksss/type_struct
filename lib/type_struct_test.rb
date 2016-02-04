@@ -26,6 +26,42 @@ module TypeStructTest
     bar: Bar,
   ); end
 
+  BoolClass = TrueClass | FalseClass
+  C = TypeStruct.new(
+    a: ArrayOf.new(BoolClass)
+  )
+  B = TypeStruct.new(
+    a: Integer,
+    b: BoolClass,
+    c: ArrayOf.new(Integer),
+    d: ArrayOf.new(BoolClass),
+    e: C,
+  )
+  A = TypeStruct.new(
+    a: ArrayOf.new(Integer),
+    b: ArrayOf.new(BoolClass),
+    c: BoolClass,
+    d: B,
+    e: ArrayOf.new(B),
+  )
+
+  def test_s_from_hash_a(t)
+    a = A.from_hash(
+      a: [1,2,3],
+      b: [false, true, false],
+      c: false,
+      d: {a: 1, b: false, c: [1,2,3], d: [false], e: {a: [true]}},
+      e: [
+        {a: 1, b: false, c: [1,2,3], d: [false], e: {a: [true]}},
+        {a: 2, b: true, c: [1,2,3], d: [false], e: {a: [true]}},
+        {a: 3, b: true, c: [1,2,3], d: [false], e: {a: [true]}}
+      ],
+    )
+    unless A === a
+      t.error("failed")
+    end
+  end
+
   def test_s_from_hash(t)
     foo = Foo.from_hash(bar: { baz: [1, 2, 3] })
     unless Foo === foo
@@ -95,23 +131,6 @@ module TypeStructTest
     end
   end
 
-  class NotImplVal
-    def self.members
-      [:b]
-    end
-  end
-
-  class NotImplType < TypeStruct.new(
-    a: NotImplVal,
-  ); end
-
-  def test_s_from_hash_not_supprt_error(t)
-    NotImplType.from_hash(a: { b: nil })
-  rescue NotImplementedError
-  rescue => e
-    t.error("unexpected error raise #{e.class}:#{e.message}")
-  end
-
   def test_s_members(t)
     m = Dummy.members
     expect = [:str, :num, :reg, :ary, :any]
@@ -142,6 +161,42 @@ module TypeStructTest
     end
     unless Dummy.valid?(:reg, "abc")
       t.error('expect :reg valid "abc"')
+    end
+  end
+
+  def test_arrayof_s_valid?(t)
+    unless A.valid?(:a, [1,2,3])
+      t.error("ArrayOf failed with [1,2,3]")
+    end
+  end
+
+  def test_arrayof_union_s_valid?(t)
+    unless A.valid?(:b, [false, true, false])
+      t.error("ArrayOf failed with Union")
+    end
+  end
+
+  def test_union_s_valid?(t)
+    unless A.valid?(:c, false)
+      t.error("Union is invalid with false")
+    end
+  end
+
+  def test_type_struct_s_valid?(t)
+    b = B.new(a: 1, b: false, c: [1,2,3], d: [false], e: C.new(a: [true]))
+    unless A.valid?(:d, b)
+      t.error("TypeStruct is invalid with #{b}")
+    end
+  end
+
+  def test_arrayof_type_struct_s_valid?(t)
+    ary_b = [
+      B.new(a: 1, b: false, c: [1,2,3], d: [false], e: C.new(a: [true])),
+      B.new(a: 2, b: true, c: [1,2,3], d: [false], e: C.new(a: [true])),
+      B.new(a: 3, b: false, c: [1,2,3], d: [false], e: C.new(a: [true])),
+    ]
+    unless A.valid?(:e, ary_b)
+      t.error("ArrayOf with TypeStruct is invalid with #{ary_b}")
     end
   end
 

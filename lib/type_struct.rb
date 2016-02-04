@@ -1,3 +1,45 @@
+require 'forwardable'
+class ArrayOf
+  attr_reader :type
+  def initialize(type)
+    @type = type
+  end
+
+  def to_s
+    "#<ArrayOf [#{@type}]>"
+  end
+  alias inspect to_s
+end
+
+class Union
+  extend Forwardable
+  def_delegators :@classes, :each
+  include Enumerable
+  def initialize(*classes)
+    @classes = classes
+  end
+
+  def |(other)
+    @classes << other
+    self
+  end
+
+  def ===(other)
+    @classes.any? { |c| c === other }
+  end
+
+  def to_s
+    "#<#{self.class}(#{@classes.join('|')})>"
+  end
+  alias inspect to_s
+end
+
+class Class
+  def |(other)
+    Union.new(self, other)
+  end
+end
+
 class TypeStruct
   require "type_struct/version"
 
@@ -40,23 +82,49 @@ class TypeStruct
   end
 
   class << self
+    def try_convert(klass, value)
+      if Union === klass
+        klass.each { |k|
+          t = try_convert(k, value)
+          if !t.nil?
+            return t
+          end
+        }
+        nil
+      elsif klass.ancestors.include?(TypeStruct)
+        klass.from_hash(value)
+      elsif klass.ancestors.include?(Struct)
+        struct = klass.new
+        value.each { |k, v| struct[k] = v }
+        struct
+      else
+        value
+      end
+    rescue
+      nil
+    end
+
     def from_hash(h)
       args = {}
-      h.each do |k, v|
-        t = type(k)
-        if t.respond_to?(:members) && v.keys == t.members
-          a = t.ancestors
-          if a.include?(TypeStruct)
-            args[k] = t.new(v)
-          elsif a.include?(Struct)
-            tt = t.new
-            v.each { |vk, vv| tt[vk] = vv }
-            args[k] = tt
+      h.each do |key, value|
+        t = type(key)
+        if Class === t
+          case
+          when t.ancestors.include?(TypeStruct)
+            args[key] = t.from_hash(value)
+          when t.ancestors.include?(Struct)
+            struct = t.new
+            value.each { |k, v| struct[k] = v }
+            args[key] = struct
+          when t.respond_to?(:new)
+            args[key] = t.new(value)
           else
-            raise NotImplementedError, "#{t} is not supported yet"
+            args[key] = value
           end
+        elsif ArrayOf === t
+          args[key] = value.map{ |v| try_convert(t.type, v) }
         else
-          args[k] = v
+          args[key] = value
         end
       end
       new(args)
@@ -79,10 +147,19 @@ class TypeStruct
       end
     end
 
+    def valid_all?(v)
+      v.all? { |vk, vv| valid?(k, v) }
+    rescue
+      false
+    end
+
     def valid?(k, v)
       t = definition[k]
       unless Hash === t
         t = { type: t, nilable: false }
+      end
+      if ArrayOf === t[:type] && Array === v
+        return v.all? { |vv| t[:type].type === vv }
       end
       if t[:nilable] == true && v.nil?
         true
@@ -102,10 +179,10 @@ class TypeStruct
         const_set :DEFINITION, args
 
         class << self
-          alias new original_new
+          alias_method :new, :original_new
         end
 
-        args.keys.each do |k, _|
+        args.each do |k, _|
           define_method(k) do
             instance_variable_get("@#{k}")
           end
@@ -113,7 +190,7 @@ class TypeStruct
           define_method("#{k}=") do |v|
             raise TypeStruct::NoMemberError unless respond_to?(k)
             unless self.class.valid?(k, v)
-              raise TypeError, "`#{k.inspect}' expect #{self.class.type(k)} got #{v.inspect}"
+              raise TypeError, "#{self.class}##{k} expect #{self.class.type(k)} got #{v.inspect}"
             end
             instance_variable_set("@#{k}", v)
           end
