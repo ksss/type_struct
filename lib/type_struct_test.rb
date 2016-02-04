@@ -70,6 +70,11 @@ module TypeStructTest
       t.error("return value was break")
     end
 
+    foo = Foo.from_hash("bar" => { "baz" => [1, 2, 3] })
+    unless Foo === foo
+      t.error("return value was break")
+    end
+
     begin
       Foo.from_hash(bar: { baz: [1, 2, 3] }, nil: 1)
     rescue TypeError
@@ -208,6 +213,13 @@ module TypeStructTest
     expects.each do |k, v|
       unless dummy[k] == v
         t.error("expect #{dummy[k]} got #{v}")
+      end
+    end
+
+    dummy2 = Dummy.new("str" => "aaa", "num" => 123, "reg" => "abc", "ary" => [1.1, 1], "any" => [1, "bbb"])
+    expects.each do |k, v|
+      unless dummy2[k] == v
+        t.error("expect #{dummy2[k]} got #{v}")
       end
     end
   end

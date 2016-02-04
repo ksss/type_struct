@@ -10,8 +10,12 @@ class TypeStruct
   end
 
   def initialize(arg)
+    sym_arg = {}
+    arg.each do |k, v|
+      sym_arg[k.to_sym] = v
+    end
     self.class.members.each do |k|
-      self[k] = arg[k]
+      self[k] = sym_arg[k]
     end
   end
 
@@ -72,6 +76,7 @@ class TypeStruct
     def from_hash(h)
       args = {}
       h.each do |key, value|
+        key = key.to_sym
         t = type(key)
         if Class === t
           case
