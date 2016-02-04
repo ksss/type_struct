@@ -1,54 +1,6 @@
-require "forwardable"
-class ArrayOf
-  attr_reader :type
-  def initialize(type)
-    @type = type
-  end
+require "union_ext"
+require "arrayof"
 
-  def |(other)
-    Union.new(self, other)
-  end
-
-  def to_s
-    "#<#{self.class} #{@type}>"
-  end
-  alias inspect to_s
-
-  def ===(other)
-    return false unless other.respond_to?(:any?)
-    other.any? { |o| @type === o }
-  end
-end
-
-class Union
-  extend Forwardable
-  def_delegators :@classes, :each
-  include Enumerable
-  def initialize(*classes)
-    @classes = classes
-  end
-
-  def |(other)
-    Union.new(*@classes, other)
-  end
-
-  def ===(other)
-    @classes.any? { |c| c === other }
-  end
-
-  def to_s
-    "#<#{self.class} #{@classes.join('|')}>"
-  end
-  alias inspect to_s
-end
-
-module UnionExt
-  refine Class do
-    def |(other)
-      Union.new(self, other)
-    end
-  end
-end
 using UnionExt
 
 class TypeStruct
@@ -168,8 +120,6 @@ class TypeStruct
       t = definition[k]
       if ArrayOf === t && Array === v
         v.all? { |vv| t.type === vv }
-      elsif Union === t
-        t === v
       elsif Array === t
         return false if v.nil?
         v.all? { |i| t.any? { |c| c === i } }

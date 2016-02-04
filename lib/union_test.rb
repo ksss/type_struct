@@ -1,4 +1,4 @@
-require "type_struct"
+require "union_ext"
 
 module UnionTest
   U = Union.new(TrueClass, FalseClass)
