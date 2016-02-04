@@ -1,4 +1,4 @@
-require 'forwardable'
+require "forwardable"
 class ArrayOf
   attr_reader :type
   def initialize(type)
@@ -97,10 +97,10 @@ class TypeStruct
       return nil unless klass
 
       if Union === klass
-        klass.each { |k|
+        klass.each do |k|
           t = try_convert(k, value)
           return t if !t.nil?
-        }
+        end
         nil
       elsif ArrayOf === klass
         value.map { |v| try_convert(klass.type, v) }
@@ -135,10 +135,10 @@ class TypeStruct
             args[key] = value
           end
         elsif ArrayOf === t
-          if value.respond_to?(:map)
-            args[key] = value.map { |v| try_convert(t.type, v) }
+          args[key] = if value.respond_to?(:map)
+            value.map { |v| try_convert(t.type, v) }
           else
-            args[key] = value
+            value
           end
         else
           args[key] = try_convert(t, value)

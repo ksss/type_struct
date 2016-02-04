@@ -49,14 +49,14 @@ module TypeStructTest
 
   def test_s_from_hash_a(t)
     a = A.from_hash(
-      a: [1,2,3],
+      a: [1, 2, 3],
       b: [false, true, false],
       c: false,
-      d: {a: 1, b: false, c: [1,2,3], d: [false], e: {a: [true]}},
+      d: { a: 1, b: false, c: [1, 2, 3], d: [false], e: { a: [true] } },
       e: [
-        {a: 1, b: false, c: [1,2,3], d: [false], e: {a: [true]}},
-        {a: 2, b: true, c: [1,2,3], d: [false], e: {a: [true]}},
-        {a: 3, b: true, c: [1,2,3], d: [false], e: {a: [true]}}
+        { a: 1, b: false, c: [1, 2, 3], d: [false], e: { a: [true] } },
+        { a: 2, b: true, c: [1, 2, 3], d: [false], e: { a: [true] } },
+        { a: 3, b: true, c: [1, 2, 3], d: [false], e: { a: [true] } },
       ],
     )
     unless A === a
@@ -167,7 +167,7 @@ module TypeStructTest
   end
 
   def test_arrayof_s_valid?(t)
-    unless A.valid?(:a, [1,2,3])
+    unless A.valid?(:a, [1, 2, 3])
       t.error("ArrayOf failed with [1,2,3]")
     end
   end
@@ -185,7 +185,7 @@ module TypeStructTest
   end
 
   def test_type_struct_s_valid?(t)
-    b = B.new(a: 1, b: false, c: [1,2,3], d: [false], e: C.new(a: [true]))
+    b = B.new(a: 1, b: false, c: [1, 2, 3], d: [false], e: C.new(a: [true]))
     unless A.valid?(:d, b)
       t.error("TypeStruct is invalid with #{b}")
     end
@@ -193,9 +193,9 @@ module TypeStructTest
 
   def test_arrayof_type_struct_s_valid?(t)
     ary_b = [
-      B.new(a: 1, b: false, c: [1,2,3], d: [false], e: C.new(a: [true])),
-      B.new(a: 2, b: true, c: [1,2,3], d: [false], e: C.new(a: [true])),
-      B.new(a: 3, b: false, c: [1,2,3], d: [false], e: C.new(a: [true])),
+      B.new(a: 1, b: false, c: [1, 2, 3], d: [false], e: C.new(a: [true])),
+      B.new(a: 2, b: true, c: [1, 2, 3], d: [false], e: C.new(a: [true])),
+      B.new(a: 3, b: false, c: [1, 2, 3], d: [false], e: C.new(a: [true])),
     ]
     unless A.valid?(:e, ary_b)
       t.error("ArrayOf with TypeStruct is invalid with #{ary_b}")
