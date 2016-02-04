@@ -30,7 +30,7 @@ p sample.to_h
 #=> {:str=>"instance of String", :reg=>"not match to regexp", :num=>10, :any=>true}
 
 p sample.str
-# "instance of String"
+#=> "instance of String"
 
 sample.string #=> NoMethodError
 sample.str = 1 #=> TypeError
