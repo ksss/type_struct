@@ -134,8 +134,8 @@ class TypeStruct
     end
 
     alias original_new new
-    def new(**args)
-      Class.new(TypeStruct) do
+    def new(**args, &block)
+      c = Class.new(TypeStruct) do
         const_set :DEFINITION, args
 
         class << self
@@ -156,6 +156,10 @@ class TypeStruct
           end
         end
       end
+      if block_given?
+        c.module_eval(&block)
+      end
+      c
     end
   end
 end
