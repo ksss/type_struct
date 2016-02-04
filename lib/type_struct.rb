@@ -164,12 +164,6 @@ class TypeStruct
       end
     end
 
-    def valid_all?(v)
-      v.all? { |vk, vv| valid?(k, v) }
-    rescue
-      false
-    end
-
     def valid?(k, v)
       t = definition[k]
       if ArrayOf === t && Array === v
