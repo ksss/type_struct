@@ -9,7 +9,7 @@ class TypeStruct
   class NoMemberError < StandardError
   end
 
-  def initialize(**arg)
+  def initialize(arg)
     self.class.members.each do |k|
       self[k] = arg[k]
     end
