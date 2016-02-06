@@ -1,7 +1,6 @@
-require "type_struct/union"
-require "type_struct/arrayof"
-
 class TypeStruct
+  require "type_struct/union"
+  require "type_struct/arrayof"
   require "type_struct/version"
 
   class NoMemberError < StandardError
