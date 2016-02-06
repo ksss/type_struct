@@ -1,4 +1,4 @@
-require "union"
+require "type_struct/union"
 
 class ArrayOf
   attr_reader :type

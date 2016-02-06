@@ -1,5 +1,5 @@
-require "union"
-require "arrayof"
+require "type_struct/union"
+require "type_struct/arrayof"
 
 class TypeStruct
   require "type_struct/version"

@@ -1,4 +1,4 @@
-require "union"
+require "type_struct/union"
 
 module UnionExt
   refine Class do
