@@ -66,9 +66,8 @@ line.stort
 ### Union
 
 ```ruby
-require "union"
 Foo = TypeStruct.new(
-  bar: Union.new(TrueClass, FalseClass)
+  bar: TypeStruct::Union.new(TrueClass, FalseClass)
 )
 p Foo.new(bar: false) #=> #<Foo bar=false>
 ```
@@ -76,7 +75,7 @@ p Foo.new(bar: false) #=> #<Foo bar=false>
 or
 
 ```ruby
-require "union_ext"
+require "type_struct/ext"
 using UnionExt
 Foo = TypeStruct.new(
   bar: TrueClass | FalseClass,
@@ -87,7 +86,7 @@ Foo = TypeStruct.new(
 
 ```ruby
 Bar = TypeStruct.new(
-  baz: ArrayOf.new(Integer),
+  baz: TypeStruct::ArrayOf.new(Integer),
 )
 p Bar.new(baz: [1, 2, 3]) #=> #<Bar baz=[1, 2, 3]>
 ```
@@ -95,6 +94,7 @@ p Bar.new(baz: [1, 2, 3]) #=> #<Bar baz=[1, 2, 3]>
 ### Mix
 
 ```ruby
+require "type_struct/ext"
 using UnionExt
 Baz = TypeStruct.new(
   qux: ArrayOf.new(Integer | TrueClass | FalseClass) | NilClass
