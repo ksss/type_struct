@@ -1,4 +1,5 @@
 require "type_struct"
+require "type_struct/ext"
 
 module TypeStructTest
   using UnionExt
