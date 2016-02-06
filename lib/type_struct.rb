@@ -111,26 +111,11 @@ class TypeStruct
     end
 
     def type(k)
-      t = definition[k]
-      if Hash === t
-        t[:type]
-      else
-        t
-      end
+      definition[k]
     end
 
     def valid?(k, v)
-      t = definition[k]
-      if ArrayOf === t && Array === v
-        v.all? { |vv| t.type === vv }
-      elsif Array === t
-        return false if v.nil?
-        v.all? { |i| t.any? { |c| c === i } }
-      elsif TypeStruct === v
-        t == v.class
-      else
-        t === v
-      end
+      definition[k] === v
     end
 
     alias original_new new
