@@ -1,5 +1,6 @@
 require "type_struct/union"
 require "type_struct/arrayof"
+require "type_struct/interface"
 
 class TypeStruct
   module UnionExt
@@ -14,3 +15,4 @@ end
 ArrayOf = TypeStruct::ArrayOf
 Union = TypeStruct::Union
 UnionExt = TypeStruct::UnionExt
+Interface = TypeStruct::Interface
