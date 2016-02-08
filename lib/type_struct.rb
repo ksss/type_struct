@@ -4,9 +4,6 @@ class TypeStruct
   require "type_struct/interface"
   require "type_struct/version"
 
-  class NoMemberError < StandardError
-  end
-
   def initialize(arg)
     sym_arg = {}
     arg.each do |k, v|
@@ -133,7 +130,6 @@ class TypeStruct
           end
 
           define_method("#{k}=") do |v|
-            raise TypeStruct::NoMemberError unless respond_to?(k)
             unless self.class.valid?(k, v)
               raise TypeError, "#{self.class}##{k} expect #{self.class.type(k)} got #{v.inspect}"
             end
