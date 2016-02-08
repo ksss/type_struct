@@ -28,5 +28,9 @@ class TypeStruct
         other.respond_to?(m)
       end
     end
+
+    def to_s
+      "#<#{self.class}(#{@methods.map(&:inspect).join(',')})>"
+    end
   end
 end
