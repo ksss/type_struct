@@ -1,6 +1,7 @@
 require "type_struct/interface"
 
 module InterfaceTest
+  Interface = TypeStruct::Interface
   def test_initialize(t)
     unless Interface === Interface.new
       t.error("return value was break")
