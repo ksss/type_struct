@@ -1,3 +1,5 @@
+require "type_struct/union"
+
 class TypeStruct
   # IOLike = TypeStruct::Interface.new(
   #   :read,
