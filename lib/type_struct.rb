@@ -73,28 +73,7 @@ class TypeStruct
       h.each do |key, value|
         key = key.to_sym
         t = type(key)
-        if Class === t
-          case
-          when t.ancestors.include?(TypeStruct)
-            args[key] = t.from_hash(value)
-          when t.ancestors.include?(Struct)
-            struct = t.new
-            value.each { |k, v| struct[k] = v }
-            args[key] = struct
-          when t.respond_to?(:new)
-            args[key] = t.new(value)
-          else
-            args[key] = value
-          end
-        elsif ArrayOf === t
-          args[key] = if value.respond_to?(:map)
-            value.map { |v| try_convert(t.type, v) }
-          else
-            value
-          end
-        else
-          args[key] = try_convert(t, value)
-        end
+        args[key] = try_convert(t, value)
       end
       new(args)
     end
