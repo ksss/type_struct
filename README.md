@@ -61,9 +61,11 @@ line.stort
 #=> NoMethodError
 ```
 
-## Two special notation
+## Three special notation
 
 ### Union
+
+Union is a object express class that some classes as one class like crystal `Union`.
 
 ```ruby
 Foo = TypeStruct.new(
@@ -84,6 +86,8 @@ Foo = TypeStruct.new(
 
 ### ArrayOf
 
+ArrayOf is a object express array type.
+
 ```ruby
 Bar = TypeStruct.new(
   baz: TypeStruct::ArrayOf.new(Integer),
@@ -91,11 +95,26 @@ Bar = TypeStruct.new(
 p Bar.new(baz: [1, 2, 3]) #=> #<Bar baz=[1, 2, 3]>
 ```
 
+### Interface
+
+Interface is a object for duck typing like golang `interface`.
+
+`Interface#===` check all method using `respond_to?`
+
+```ruby
+Foo = TypeStruct.new(
+  bar: TypeStruct::Interface.new(:read, :write)
+  # or Interface.new(:read, :write) on required 'type_struct/ext'
+)
+Foo.new(bar: $stdin)
+Foo.new(bar: 1) #=> TypeError
+```
+
 ### Mix
 
 ```ruby
 require "type_struct/ext"
-using UnionExt
+
 Baz = TypeStruct.new(
   qux: ArrayOf.new(Integer | TrueClass | FalseClass) | NilClass
 )
