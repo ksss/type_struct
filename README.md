@@ -114,7 +114,7 @@ Foo.new(bar: 1) #=> TypeError
 
 ```ruby
 require "type_struct/ext"
-
+using UnionExt
 Baz = TypeStruct.new(
   qux: ArrayOf.new(Integer | TrueClass | FalseClass) | NilClass
 )
