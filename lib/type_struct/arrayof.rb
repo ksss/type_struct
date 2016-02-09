@@ -17,6 +17,7 @@ class TypeStruct
     alias inspect to_s
 
     def ===(other)
+      return true if other.respond_to?(:empty?) && other.empty?
       return false unless other.respond_to?(:any?)
       other.any? { |o| @type === o }
     end
