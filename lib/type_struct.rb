@@ -64,6 +64,8 @@ class TypeStruct
       else
         value
       end
+    rescue TypeError
+      raise
     rescue
       nil
     end
