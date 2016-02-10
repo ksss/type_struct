@@ -46,11 +46,14 @@ class TypeStruct
 
   class << self
     def try_convert(klass, value)
-      return nil unless klass
-
+      return nil unless !klass.nil? && !value.nil?
       if Union === klass
         klass.each do |k|
-          t = try_convert(k, value)
+          t = begin
+                try_convert(k, value)
+              rescue TypeError
+                nil
+              end
           return t if !t.nil?
         end
         nil
@@ -62,13 +65,11 @@ class TypeStruct
         struct = klass.new
         value.each { |k, v| struct[k] = v }
         struct
-      else
+      elsif klass === value
         value
+      else
+        nil
       end
-    rescue TypeError
-      raise
-    rescue
-      nil
     end
 
     def from_hash(h)
