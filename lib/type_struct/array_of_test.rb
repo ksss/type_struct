@@ -1,3 +1,5 @@
+require "type_struct/array_of"
+
 module ArrayOfTest
   def test_initialize(t)
     unless ArrayOf === ArrayOf.new(Integer)

@@ -1,5 +1,5 @@
 require "type_struct/union"
-require "type_struct/arrayof"
+require "type_struct/array_of"
 require "type_struct/interface"
 
 class TypeStruct
