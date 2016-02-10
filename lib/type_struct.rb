@@ -64,6 +64,8 @@ class TypeStruct
         raise UnionNotFoundError, "#{klass} is not found with errors:\n#{errors.join("\n")}"
       elsif ArrayOf === klass
         value.map { |v| try_convert(klass.type, v) }
+      elsif HashOf === klass
+        value
       elsif klass.ancestors.include?(TypeStruct)
         klass.from_hash(value)
       elsif klass.ancestors.include?(Struct)

@@ -46,6 +46,7 @@ module TypeStructTest
     c: BoolClass,
     d: B,
     e: ArrayOf.new(B),
+    f: HashOf.new(String, Integer),
   )
 
   def test_s_from_hash_a(t)
@@ -59,6 +60,25 @@ module TypeStructTest
         { a: 2, b: true, c: [1, 2, 3], d: [false], e: { a: [true] } },
         { a: 3, b: true, c: [1, 2, 3], d: [false], e: { a: [true] } },
       ],
+      f: {
+        "a" => 1,
+        "c" => 2,
+      },
+    )
+    aa = A.new(
+      a: [1, 2, 3],
+      b: [false, true, false],
+      c: false,
+      d: B.new(a: 1, b: false, c: [1, 2, 3], d: [false], e: C.new(a: [true])),
+      e: [
+        B.new(a: 1, b: false, c: [1, 2, 3], d: [false], e: C.new(a: [true])),
+        B.new(a: 2, b: true, c: [1, 2, 3], d: [false], e: C.new(a: [true])),
+        B.new(a: 3, b: true, c: [1, 2, 3], d: [false], e: C.new(a: [true])),
+      ],
+      f: {
+        "a" => 1,
+        "c" => 2,
+      },
     )
     unless A === a
       t.error("failed")
