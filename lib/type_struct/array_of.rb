@@ -2,13 +2,10 @@ require "type_struct/union"
 
 class TypeStruct
   class ArrayOf
+    include Unionable
     attr_reader :type
     def initialize(type)
       @type = type
-    end
-
-    def |(other)
-      Union.new(self, other)
     end
 
     def to_s

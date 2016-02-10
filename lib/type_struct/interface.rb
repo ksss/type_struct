@@ -17,12 +17,9 @@ class TypeStruct
   #   puts "this is a io like object!"
   # end
   class Interface
+    include Unionable
     def initialize(*methods)
       @methods = methods
-    end
-
-    def |(other)
-      Union.new(self, other)
     end
 
     def ===(other)

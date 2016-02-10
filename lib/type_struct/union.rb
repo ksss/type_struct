@@ -22,4 +22,10 @@ class TypeStruct
     end
     alias inspect to_s
   end
+
+  module Unionable
+    def |(other)
+      Union.new(self, other)
+    end
+  end
 end

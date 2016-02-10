@@ -34,6 +34,13 @@ module UnionTest
     end
   end
 
+  def test_class_or_is_undefined(t)
+    TrueClass | FalseClass
+  rescue NoMethodError
+  else
+    t.error("refinents miss")
+  end
+
   using UnionExt
 
   def test_class_or(t)

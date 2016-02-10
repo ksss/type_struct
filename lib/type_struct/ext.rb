@@ -6,9 +6,7 @@ require "type_struct/interface"
 class TypeStruct
   module UnionExt
     refine Class do
-      def |(other)
-        Union.new(self, other)
-      end
+      include Unionable
     end
   end
 end
