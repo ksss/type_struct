@@ -4,6 +4,8 @@ class TypeStruct
   require "type_struct/interface"
   require "type_struct/version"
 
+  UnionNotFoundError = Class.new(StandardError)
+
   def initialize(arg)
     sym_arg = {}
     arg.each do |k, v|
@@ -48,15 +50,17 @@ class TypeStruct
     def try_convert(klass, value)
       return nil unless !klass.nil? && !value.nil?
       if Union === klass
+        errors = []
         klass.each do |k|
           t = begin
                 try_convert(k, value)
-              rescue TypeError
+              rescue TypeError => e
+                errors << e
                 nil
               end
           return t if !t.nil?
         end
-        nil
+        raise UnionNotFoundError, "#{klass} is not found with errors:\n#{errors.join("\n")}"
       elsif ArrayOf === klass
         value.map { |v| try_convert(klass.type, v) }
       elsif klass.ancestors.include?(TypeStruct)
@@ -65,10 +69,8 @@ class TypeStruct
         struct = klass.new
         value.each { |k, v| struct[k] = v }
         struct
-      elsif klass === value
-        value
       else
-        nil
+        value
       end
     end
 

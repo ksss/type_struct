@@ -71,6 +71,13 @@ module TypeStructTest
       t.error("return value was break")
     end
 
+    begin
+      Foo.from_hash(bar: { baz: [1, 2, "3"] })
+    rescue TypeError
+    else
+      t.error("'3' is not valid value for Baz.baz:#{Bar.definition.fetch(:baz)}")
+    end
+
     foo = Foo.from_hash("bar" => { "baz" => [1, 2, 3] })
     unless Foo === foo
       t.error("return value was break")

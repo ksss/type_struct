@@ -19,7 +19,7 @@ class TypeStruct
     def ===(other)
       return true if other.respond_to?(:empty?) && other.empty?
       return false unless other.respond_to?(:any?)
-      other.any? { |o| @type === o }
+      other.all? { |o| @type === o }
     end
   end
 end
