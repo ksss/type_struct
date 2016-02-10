@@ -34,6 +34,7 @@ class TypeStruct
     end
     "#<#{self.class} #{m.join(', ')}>"
   end
+  alias to_s inspect
 
   def to_h
     m = {}
