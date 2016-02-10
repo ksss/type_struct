@@ -109,7 +109,7 @@ class TypeStruct
           alias_method :new, :original_new
         end
 
-        args.each do |k, _|
+        args.each_key do |k|
           define_method(k) do
             instance_variable_get("@#{k}")
           end
