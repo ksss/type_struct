@@ -76,13 +76,6 @@ module TypeStructTest
       t.error("return value was break")
     end
 
-    begin
-      Foo.from_hash(bar: { baz: [1, 2, 3] }, nil: 1)
-    rescue TypeError
-    else
-      t.error("Bar.qux is not able to nil but accepted")
-    end
-
     foo = Foo.from_hash(bar: { baz: [1, 2, 3] }, nil: nil)
     unless TypeStruct === foo
       t.error("return value type was break")
