@@ -1,6 +1,7 @@
 class TypeStruct
   require "type_struct/union"
   require "type_struct/array_of"
+  require "type_struct/hash_of"
   require "type_struct/interface"
   require "type_struct/version"
 
