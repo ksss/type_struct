@@ -4,6 +4,8 @@
 
 Imitating static typed struct.
 
+All type is checked by `===` method.
+
 ## Usage
 
 ### Check type
@@ -38,6 +40,8 @@ sample.str = 1 #=> TypeError
 
 ### Mapping from Hash
 
+Generate object from hash recursive
+
 ```ruby
 Point = TypeStruct.new(
   x: Integer,
@@ -61,7 +65,7 @@ line.stort
 #=> NoMethodError
 ```
 
-## Three special notation
+## Four special notation
 
 ### Union
 
@@ -95,6 +99,18 @@ Bar = TypeStruct.new(
 p Bar.new(baz: [1, 2, 3]) #=> #<Bar baz=[1, 2, 3]>
 ```
 
+### HashOf
+
+```ruby
+Baz = TypeStruct.new(
+  qux: TypeStruct::HashOf.new(String, TypeStruct::ArrayOf.new(Integer))
+)
+p Baz.new(qux: { "a" => [1, 2, 3] }) #=> #<Baz qux={"a"=>[1, 2, 3]}>
+p Baz.from_hash(qux: { "a" => [1, 2, 3] }) #<Baz qux={"a"=>[1, 2, 3]}>
+p Baz.new(qux: { :a  => [1, 2, 3] }) #=> TypeError
+p Baz.new(qux: { "a" => [1, 2, nil] }) #=> TypeError
+```
+
 ### Interface
 
 Interface is a object for duck typing like golang `interface`.
@@ -122,6 +138,7 @@ p Baz.new(qux: [1]) #=> #<AAA::Baz qux=[1]>
 p Baz.new(qux: [true, false]) #=> #<AAA::Baz qux=[true, false]>
 p Baz.new(qux: nil) #=> #<AAA::Baz qux=nil>
 p Baz.new(qux: 1) #=> TypeError
+p Baz.from_hash(qux: [1, 2, false, true]) #=> #<A::Baz qux=[1, 2, false, true]>
 ```
 
 ## Installation
