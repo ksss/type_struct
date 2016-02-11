@@ -9,7 +9,7 @@ class TypeStruct
     end
 
     def to_s
-      "#<#{self.class} #{@type}>"
+      "#{self.class}(#{@type})"
     end
     alias inspect to_s
 

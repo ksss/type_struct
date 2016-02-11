@@ -14,5 +14,9 @@ class TypeStruct
         @key_type === k && @value_type === v
       end
     end
+
+    def to_s
+      "#{self.class}(#{@key_type}, #{@value_type})"
+    end
   end
 end
