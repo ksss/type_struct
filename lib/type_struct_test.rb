@@ -49,6 +49,10 @@ module TypeStructTest
     f: HashOf.new(String, Integer),
   )
 
+  H = TypeStruct.new(
+    a: HashOf.new(Symbol, ArrayOf.new(String)),
+  )
+
   def test_s_from_hash_a(t)
     a = A.from_hash(
       a: [1, 2, 3],
@@ -86,6 +90,30 @@ module TypeStructTest
 
     unless a == aa
       t.error("not same new and from_hash")
+    end
+  end
+
+  def test_hash_of(t)
+    h = H.new(
+      a: { foo: %w(a b c) },
+    )
+    unless "c" == h.a[:foo][2]
+      t.error("assign failed")
+    end
+    begin
+      H.new(
+        a: { foo: ["a", "b", nil] },
+      )
+    rescue TypeError
+    else
+      t.error("TypeError was not railsed")
+    end
+
+    hh = H.from_hash(
+      a: { foo: %w(a b c) },
+    )
+    unless hh == h
+      t.error("new and from_hash dose not make equal object")
     end
   end
 
