@@ -81,7 +81,11 @@ module TypeStructTest
       },
     )
     unless A === a
-      t.error("failed")
+      t.error("instance type miss")
+    end
+
+    unless a == aa
+      t.error("not same new and from_hash")
     end
   end
 
