@@ -135,7 +135,7 @@ module TypeStructTest
       t.error("type error")
     end
 
-    unless bb == b.from_hash(a: [{a: 1}, {a: 2}, {a: 3}])
+    unless bb == b.from_hash(a: [{ a: 1 }, { a: 2 }, { a: 3 }])
       t.error("from_hash error")
     end
   end
