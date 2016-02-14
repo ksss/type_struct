@@ -49,10 +49,6 @@ module TypeStructTest
     f: HashOf.new(String, Integer),
   )
 
-  H = TypeStruct.new(
-    a: HashOf.new(Symbol, ArrayOf.new(String)),
-  )
-
   def test_s_from_hash_a(t)
     a = A.from_hash(
       a: [1, 2, 3],
@@ -94,26 +90,53 @@ module TypeStructTest
   end
 
   def test_hash_of(t)
-    h = H.new(
-      a: { foo: %w(a b c) },
+    b = TypeStruct.new(b: Integer)
+    hc = TypeStruct.new(
+      a: HashOf.new(Symbol, b),
     )
-    unless "c" == h.a[:foo][2]
+
+    h = hc.new(
+      a: { sym: b.new(b: 1) },
+    )
+    unless 1 === h.a[:sym].b
       t.error("assign failed")
     end
+
+    p HashOf.new(Symbol, b) === []
     begin
-      H.new(
-        a: { foo: ["a", "b", nil] },
+      hc.new(
+        a: [],
       )
     rescue TypeError
     else
       t.error("TypeError was not railsed")
     end
 
-    hh = H.from_hash(
-      a: { foo: %w(a b c) },
+    hh = hc.from_hash(
+      a: { sym: { b: 1 } },
     )
     unless hh == h
       t.error("new and from_hash dose not make equal object")
+    end
+
+    begin
+      hh = hc.from_hash(a: 1)
+    rescue TypeError
+    else
+      t.error("TypeError dose not raise error")
+    end
+  end
+
+  def test_array_of(t)
+    a = TypeStruct.new(a: Integer)
+    b = TypeStruct.new(a: ArrayOf.new(a))
+    bb = b.new(a: [a.new(a: 1), a.new(a: 2), a.new(a: 3)])
+    unless b === bb
+      t.error("type error")
+    end
+
+    unless bb == b.from_hash(a: [{a: 1}, {a: 2}, {a: 3}])
+      t.error("from_hash error")
     end
   end
 

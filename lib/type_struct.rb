@@ -50,6 +50,7 @@ class TypeStruct
   class << self
     def try_convert(klass, value)
       return nil unless !klass.nil? && !value.nil?
+
       if Union === klass
         errors = []
         klass.each do |k|
@@ -65,13 +66,22 @@ class TypeStruct
       elsif ArrayOf === klass
         value.map { |v| try_convert(klass.type, v) }
       elsif HashOf === klass
-        value
-      elsif klass.ancestors.include?(TypeStruct)
-        klass.from_hash(value)
-      elsif klass.ancestors.include?(Struct)
-        struct = klass.new
-        value.each { |k, v| struct[k] = v }
-        struct
+        return value unless Hash === value
+        new_hash = {}
+        value.each do |hk, hv|
+          new_hash[hk] = try_convert(klass.value_type, hv)
+        end
+        new_hash
+      elsif klass.respond_to?(:ancestors)
+        if klass.ancestors.include?(TypeStruct)
+          klass.from_hash(value)
+        elsif klass.ancestors.include?(Struct)
+          struct = klass.new
+          value.each { |k, v| struct[k] = v }
+          struct
+        else
+          value
+        end
       else
         value
       end
