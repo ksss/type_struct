@@ -74,6 +74,7 @@ class TypeStruct
         new_hash
       elsif klass.respond_to?(:ancestors)
         if klass.ancestors.include?(TypeStruct)
+          return nil unless Hash === value
           klass.from_hash(value)
         elsif klass.ancestors.include?(Struct)
           struct = klass.new

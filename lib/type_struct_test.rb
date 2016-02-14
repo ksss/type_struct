@@ -180,6 +180,30 @@ module TypeStructTest
     end
   end
 
+  def test_s_from_hash_union(t)
+    a = TypeStruct.new(a: Integer)
+    b = TypeStruct.new(b: Integer)
+    c = TypeStruct.new(c: Integer)
+    u = TypeStruct::Union.new(a, b, c)
+    d = TypeStruct.new(d: u)
+
+    d.from_hash(d: { b: 1 })
+
+    begin
+      d.from_hash(d: [b: 1])
+    rescue TypeStruct::UnionNotFoundError
+    else
+      t.error("error dose not raised")
+    end
+
+    begin
+      d.from_hash(d: { b: "a" })
+    rescue TypeStruct::UnionNotFoundError
+    else
+      t.error("error dose not raised")
+    end
+  end
+
   def test_s_from_hash_equal(t)
     expect = Foo.new(bar: Bar.new(baz: [1, 2, 3]))
     actual = Foo.from_hash(bar: { baz: [1, 2, 3] })
