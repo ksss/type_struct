@@ -102,7 +102,6 @@ module TypeStructTest
       t.error("assign failed")
     end
 
-    p HashOf.new(Symbol, b) === []
     begin
       hc.new(
         a: [],
