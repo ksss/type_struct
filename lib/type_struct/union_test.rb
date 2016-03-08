@@ -41,7 +41,7 @@ module UnionTest
     t.error("refinents miss")
   end
 
-  using UnionExt
+  using TypeStruct::UnionExt
 
   def test_class_or(t)
     u = TrueClass | FalseClass

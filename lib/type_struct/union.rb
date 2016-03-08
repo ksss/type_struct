@@ -28,4 +28,10 @@ class TypeStruct
       Union.new(self, other)
     end
   end
+
+  module UnionExt
+    refine Class do
+      include Unionable
+    end
+  end
 end
