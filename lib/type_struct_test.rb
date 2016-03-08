@@ -8,7 +8,7 @@ module TypeStructTest
     str: String,
     num: Integer,
     reg: /abc/,
-    ary: ArrayOf.new(Integer | Float) | NilClass,
+    ary: ArrayOf(Integer | Float) | NilClass,
     any: Object,
   ); end
 
@@ -21,7 +21,7 @@ module TypeStructTest
   ); end
 
   class Bar < TypeStruct.new(
-    baz: ArrayOf.new(Integer | NilClass),
+    baz: ArrayOf(Integer | NilClass),
   ); end
 
   class Foo < TypeStruct.new(
@@ -31,22 +31,22 @@ module TypeStructTest
 
   BoolClass = TrueClass | FalseClass
   C = TypeStruct.new(
-    a: ArrayOf.new(BoolClass),
+    a: ArrayOf(BoolClass),
   )
   B = TypeStruct.new(
     a: Integer,
     b: BoolClass,
-    c: ArrayOf.new(Integer),
-    d: ArrayOf.new(BoolClass),
+    c: ArrayOf(Integer),
+    d: ArrayOf(BoolClass),
     e: C,
   )
   A = TypeStruct.new(
-    a: ArrayOf.new(Integer),
-    b: ArrayOf.new(BoolClass),
+    a: ArrayOf(Integer),
+    b: ArrayOf(BoolClass),
     c: BoolClass,
     d: B,
-    e: ArrayOf.new(B),
-    f: HashOf.new(String, Integer),
+    e: ArrayOf(B),
+    f: HashOf(String, Integer),
   )
 
   def test_s_from_hash_a(t)
@@ -92,7 +92,7 @@ module TypeStructTest
   def test_hash_of(t)
     b = TypeStruct.new(b: Integer)
     hc = TypeStruct.new(
-      a: HashOf.new(Symbol, b),
+      a: HashOf(Symbol, b),
     )
 
     h = hc.new(
@@ -128,7 +128,7 @@ module TypeStructTest
 
   def test_array_of(t)
     a = TypeStruct.new(a: Integer)
-    b = TypeStruct.new(a: ArrayOf.new(a))
+    b = TypeStruct.new(a: ArrayOf(a))
     bb = b.new(a: [a.new(a: 1), a.new(a: 2), a.new(a: 3)])
     unless b === bb
       t.error("type error")
