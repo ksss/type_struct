@@ -1,9 +1,8 @@
 require "type_struct"
 
-class TypeStruct
+class Object
+  ArrayOf = TypeStruct::ArrayOf
+  HashOf = TypeStruct::HashOf
+  Union = TypeStruct::Union
+  Interface = TypeStruct::Interface
 end
-
-ArrayOf = TypeStruct::ArrayOf
-HashOf = TypeStruct::HashOf
-Union = TypeStruct::Union
-Interface = TypeStruct::Interface
