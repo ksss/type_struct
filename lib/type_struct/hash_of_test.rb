@@ -33,8 +33,8 @@ module HashOfTest
 
   def test_to_s(t)
     hash_of = HashOf.new(Symbol, Integer)
-    expect = "TypeStruct::HashOf(Symbol, Integer)"
-    unless expect == hash_of.to_s
+    expect = /HashOf\(Symbol, Integer\)/
+    unless expect =~ hash_of.to_s
       t.error("to_s string was break #{expect} != #{hash_of}")
     end
   end

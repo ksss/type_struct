@@ -30,8 +30,8 @@ module ArrayOfTest
 
   def test_to_s(t)
     array_of = ArrayOf.new(Symbol)
-    expect = "TypeStruct::ArrayOf(Symbol)"
-    unless expect == array_of.to_s
+    expect = /ArrayOf\(Symbol\)/
+    unless expect =~ array_of.to_s
       t.error("to_s string was break #{expect} != #{array_of}")
     end
   end

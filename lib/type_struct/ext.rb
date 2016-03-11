@@ -7,6 +7,20 @@ class Object
   Interface = TypeStruct::Interface
 end
 
+class TypeStruct
+  class ArrayOf
+    def to_s
+      "#{self.class.name.split('::').last}(#{@type})"
+    end
+  end
+
+  class HashOf
+    def to_s
+      "#{self.class.name.split('::').last}(#{@key_type}, #{@value_type})"
+    end
+  end
+end
+
 module Kernel
   def ArrayOf(klass)
     ArrayOf.new(klass)
