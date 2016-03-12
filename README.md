@@ -11,12 +11,12 @@ All type is checked by `===` method.
 ### Check type
 
 ```ruby
-class Sample < TypeStruct.new(
+Sample = TypeStruct.new(
   str: String,
   reg: /exp/,
   num: Integer,
   any: Object,
-); end
+)
 
 sample = Sample.new(
   str: "instance of String",
@@ -78,11 +78,11 @@ Foo = TypeStruct.new(
 p Foo.new(bar: false) #=> #<Foo bar=false>
 ```
 
-or
+or add `Class#|` method by refinements
 
 ```ruby
 require "type_struct/ext"
-using UnionExt
+using TypeStruct::UnionExt
 Foo = TypeStruct.new(
   bar: TrueClass | FalseClass,
 )
@@ -130,9 +130,9 @@ Foo.new(bar: 1) #=> TypeError
 
 ```ruby
 require "type_struct/ext"
-using UnionExt
+using TypeStruct::UnionExt
 Baz = TypeStruct.new(
-  qux: ArrayOf.new(Integer | TrueClass | FalseClass) | NilClass
+  qux: ArrayOf(Integer | TrueClass | FalseClass) | NilClass
 )
 p Baz.new(qux: [1]) #=> #<AAA::Baz qux=[1]>
 p Baz.new(qux: [true, false]) #=> #<AAA::Baz qux=[true, false]>
