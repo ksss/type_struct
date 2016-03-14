@@ -48,72 +48,6 @@ class TypeStruct
   end
 
   class << self
-    def try_convert(klass, value)
-      return nil unless !klass.nil? && !value.nil?
-
-      if Union === klass
-        errors = []
-        klass.each do |k|
-          t = begin
-                try_convert(k, value)
-              rescue TypeError => e
-                errors << e
-                nil
-              end
-          return t if !t.nil?
-        end
-        raise UnionNotFoundError, "#{klass} is not found with errors:\n#{errors.join("\n")}"
-      elsif ArrayOf === klass
-        value.map { |v| try_convert(klass.type, v) }
-      elsif HashOf === klass
-        return value unless Hash === value
-        new_hash = {}
-        value.each do |hk, hv|
-          new_hash[hk] = try_convert(klass.value_type, hv)
-        end
-        new_hash
-      elsif klass.respond_to?(:ancestors)
-        if klass.ancestors.include?(TypeStruct)
-          return nil unless Hash === value
-          klass.from_hash(value)
-        elsif klass.ancestors.include?(Struct)
-          struct = klass.new
-          value.each { |k, v| struct[k] = v }
-          struct
-        else
-          value
-        end
-      else
-        value
-      end
-    end
-
-    def from_hash(h)
-      args = {}
-      h.each do |key, value|
-        key = key.to_sym
-        t = type(key)
-        args[key] = try_convert(t, value)
-      end
-      new(args)
-    end
-
-    def definition
-      const_get(:DEFINITION)
-    end
-
-    def members
-      definition.keys
-    end
-
-    def type(k)
-      definition[k]
-    end
-
-    def valid?(k, v)
-      definition[k] === v
-    end
-
     alias original_new new
     def new(**args, &block)
       c = Class.new(TypeStruct) do
@@ -121,6 +55,72 @@ class TypeStruct
 
         class << self
           alias_method :new, :original_new
+
+          def from_hash(h)
+            args = {}
+            h.each do |key, value|
+              key = key.to_sym
+              t = type(key)
+              args[key] = try_convert(t, value)
+            end
+            new(args)
+          end
+
+          def definition
+            const_get(:DEFINITION)
+          end
+
+          def members
+            definition.keys
+          end
+
+          def type(k)
+            definition[k]
+          end
+
+          def valid?(k, v)
+            definition[k] === v
+          end
+
+          def try_convert(klass, value)
+            return nil unless !klass.nil? && !value.nil?
+
+            if Union === klass
+              errors = []
+              klass.each do |k|
+                t = begin
+                      try_convert(k, value)
+                    rescue TypeError => e
+                      errors << e
+                      nil
+                    end
+                return t if !t.nil?
+              end
+              raise UnionNotFoundError, "#{klass} is not found with errors:\n#{errors.join("\n")}"
+            elsif ArrayOf === klass
+              value.map { |v| try_convert(klass.type, v) }
+            elsif HashOf === klass
+              return value unless Hash === value
+              new_hash = {}
+              value.each do |hk, hv|
+                new_hash[hk] = try_convert(klass.value_type, hv)
+              end
+              new_hash
+            elsif klass.respond_to?(:ancestors)
+              if klass.ancestors.include?(TypeStruct)
+                return nil unless Hash === value
+                klass.from_hash(value)
+              elsif klass.ancestors.include?(Struct)
+                struct = klass.new
+                value.each { |k, v| struct[k] = v }
+                struct
+              else
+                value
+              end
+            else
+              value
+            end
+          end
         end
 
         args.each_key do |k|
