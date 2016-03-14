@@ -190,14 +190,20 @@ module TypeStructTest
 
     begin
       d.from_hash(d: [b: 1])
-    rescue TypeStruct::UnionNotFoundError
+    rescue TypeStruct::UnionNotFoundError => err
+      unless /is not found with errors/ =~ err.message
+        t.error("error message was changed")
+      end
     else
       t.error("error dose not raised")
     end
 
     begin
       d.from_hash(d: { b: "a" })
-    rescue TypeStruct::UnionNotFoundError
+    rescue TypeStruct::UnionNotFoundError => err
+      unless /is not found with errors/ =~ err.message
+        t.error("error message was changed")
+      end
     else
       t.error("error dose not raised")
     end
