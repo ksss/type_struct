@@ -82,6 +82,8 @@ class TypeStruct
             definition[k] === v
           end
 
+          private
+
           def try_convert(klass, value)
             return nil unless !klass.nil? && !value.nil?
 
