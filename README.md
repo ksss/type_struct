@@ -71,6 +71,8 @@ line.stort
 
 Union is a object express class that some classes as one class like crystal `Union`.
 
+`Union#===` check all object with `===` method.
+
 ```ruby
 Foo = TypeStruct.new(
   bar: TypeStruct::Union.new(TrueClass, FalseClass)
@@ -92,6 +94,8 @@ Foo = TypeStruct.new(
 
 ArrayOf is a object express array type.
 
+`ArrayOf#===` check all item with `===` method.
+
 ```ruby
 Bar = TypeStruct.new(
   baz: TypeStruct::ArrayOf.new(Integer),
@@ -100,6 +104,8 @@ p Bar.new(baz: [1, 2, 3]) #=> #<Bar baz=[1, 2, 3]>
 ```
 
 ### HashOf
+
+`HashOf#===` check all keys and values with `===` method.
 
 ```ruby
 Baz = TypeStruct.new(
