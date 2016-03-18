@@ -1,6 +1,12 @@
 require "forwardable"
 
 class TypeStruct
+  module Unionable
+    def |(other)
+      Union.new(self, other)
+    end
+  end
+
   class Union
     extend Forwardable
     def_delegators :@classes, :each
@@ -21,17 +27,11 @@ class TypeStruct
       "#<#{self.class} #{@classes.join('|')}>"
     end
     alias inspect to_s
-  end
 
-  module Unionable
-    def |(other)
-      Union.new(self, other)
-    end
-  end
-
-  module UnionExt
-    refine Class do
-      include Unionable
+    module Ext
+      refine Class do
+        include Unionable
+      end
     end
   end
 end

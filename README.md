@@ -84,7 +84,7 @@ or add `Class#|` method by refinements
 
 ```ruby
 require "type_struct/ext"
-using TypeStruct::UnionExt
+using TypeStruct::Union::Ext
 Foo = TypeStruct.new(
   bar: TrueClass | FalseClass,
 )
@@ -136,7 +136,7 @@ Foo.new(bar: 1) #=> TypeError
 
 ```ruby
 require "type_struct/ext"
-using TypeStruct::UnionExt
+using TypeStruct::Union::Ext
 Baz = TypeStruct.new(
   qux: ArrayOf(Integer | TrueClass | FalseClass) | NilClass
 )

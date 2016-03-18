@@ -2,7 +2,7 @@ require "type_struct"
 require "type_struct/ext"
 
 module TypeStructTest
-  using TypeStruct::UnionExt
+  using TypeStruct::Union::Ext
 
   class Dummy < TypeStruct.new(
     str: String,
