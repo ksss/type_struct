@@ -1,5 +1,3 @@
-require "forwardable"
-
 class TypeStruct
   module Unionable
     def |(other)
@@ -8,11 +6,14 @@ class TypeStruct
   end
 
   class Union
-    extend Forwardable
-    def_delegators :@classes, :each
     include Enumerable
+
     def initialize(*classes)
       @classes = classes
+    end
+
+    def each(*args, &block)
+      @classes.each(*args, &block)
     end
 
     def |(other)
