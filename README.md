@@ -6,6 +6,75 @@ Imitating static typed struct.
 
 All type is checked by `===` method.
 
+## Motivation
+
+### I hate Hash
+
+```ruby
+p h #=> {color: 'red', width: 120, height: 200}
+```
+
+**No name**
+
+What is this data?
+We cannot know this name.
+
+Where is this instance from?
+How do we grep doing?
+
+**Bad syntax**
+
+```ruby
+h[:widht] #=> Cannot detect typo
+#=> nil
+h.dig(:widht) #=> ditto
+#=> nil
+h.fetch(:widht) #=> too long and cannot know suggestion from did_you_mean gem
+# KeyError: key not found: :widht
+```
+
+**Freedom**
+
+```ruby
+# Where is from `who` key? Is this expected?
+p h #=> {color: 'red', width: 120, height: 200, who: 'are you?'}
+```
+
+### I like Struct
+
+**Grepable Name**
+
+```ruby
+Circle = Struct.new(:color, :width, :height)
+circle = Circle.new('red', 120, 200)
+```
+
+**Good syntax**
+
+```ruby
+circle.color
+#=> 'red'
+circle.widht
+# NoMethodError:
+Did you mean?  width
+               width=
+```
+
+**Strictry members**
+
+```ruby
+circle.who = "are you?"
+# NoMethodError: undefined method `who='
+```
+
+## Evolution
+
+- Can use keyword arguments
+- Add **Type** system
+- Recursive Mapping
+
+This is the **TypeStruct**.
+
 ## Usage
 
 ### Check type
@@ -38,9 +107,9 @@ sample.string #=> NoMethodError
 sample.str = 1 #=> TypeError
 ```
 
-### Mapping from Hash
+### Recursive Mapping
 
-Generate object from hash recursive
+Generate object from hash by recursive
 
 ```ruby
 Point = TypeStruct.new(
@@ -65,7 +134,7 @@ line.stort
 #=> NoMethodError
 ```
 
-## Four special notation
+## Four special classes
 
 ### Union
 
