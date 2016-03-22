@@ -8,7 +8,7 @@ All type is checked by `===` method.
 
 ## Motivation
 
-### I hate Hash
+### I don't like Hash
 
 ```ruby
 p h #=> {color: 'red', width: 120, height: 200}
@@ -16,10 +16,10 @@ p h #=> {color: 'red', width: 120, height: 200}
 
 **No name**
 
-What is this data?
+What is this a data?
 We cannot know this name.
 
-Where is this instance from?
+Where is this an instance from?
 How do we grep doing?
 
 **Bad syntax**
@@ -29,7 +29,7 @@ h[:widht] #=> Cannot detect typo
 #=> nil
 h.dig(:widht) #=> ditto
 #=> nil
-h.fetch(:widht) #=> too long and cannot know suggestion from did_you_mean gem
+h.fetch(:widht) #=> Can detect typo, But too long and cannot know suggestion from did_you_mean gem
 # KeyError: key not found: :widht
 ```
 
@@ -60,7 +60,7 @@ Did you mean?  width
                width=
 ```
 
-**Strictry members**
+**Strictly members**
 
 ```ruby
 circle.who = "are you?"
@@ -116,7 +116,9 @@ Point = TypeStruct.new(
   x: Integer,
   y: Integer,
 )
-Color = Struct.new(:code)
+Color = TypeStruct.new(
+  code: /\A#[0-9a-f]{6}\z/i,
+)
 Line = TypeStruct.new(
   start: Point,
   end: Point,
@@ -127,7 +129,7 @@ hash = JSON.parse(%({"start":{"x":3,"y":10},"end":{"x":5,"y":9},"color":{"code":
 line = Line.from_hash(hash)
 
 p line
-#=> #<Line start=#<Point x=3, y=10>, end=#<Point x=5, y=9>, color=#<struct Color code="#CAFE00">>
+#=> #<Line start=#<Point x=3, y=10>, end=#<Point x=5, y=9>, color=#<Color code="#CAFE00">>
 p line.start.y
 #=> 10
 line.stort
@@ -138,7 +140,7 @@ line.stort
 
 ### Union
 
-Union is a object express class that some classes as one class like crystal `Union`.
+Union is an object express class that some classes as one class like crystal `Union`.
 
 `Union#===` check all object with `===` method.
 
@@ -161,7 +163,7 @@ Foo = TypeStruct.new(
 
 ### ArrayOf
 
-ArrayOf is a object express array type.
+ArrayOf is an object express array type.
 
 `ArrayOf#===` check all item with `===` method.
 
@@ -188,7 +190,7 @@ p Baz.new(qux: { "a" => [1, 2, nil] }) #=> TypeError
 
 ### Interface
 
-Interface is a object for duck typing like golang `interface`.
+Interface is an object for duck typing like golang `interface`.
 
 `Interface#===` check all method using `respond_to?`
 
