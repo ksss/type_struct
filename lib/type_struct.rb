@@ -87,7 +87,8 @@ class TypeStruct
           def try_convert(klass, value)
             return nil unless !klass.nil? && !value.nil?
 
-            if Union === klass
+            case klass
+            when Union
               errors = []
               klass.each do |k|
                 t = begin
@@ -99,28 +100,29 @@ class TypeStruct
                 return t if !t.nil?
               end
               raise UnionNotFoundError, "#{klass} is not found with errors:\n#{errors.join("\n")}"
-            elsif ArrayOf === klass
+            when ArrayOf
               value.map { |v| try_convert(klass.type, v) }
-            elsif HashOf === klass
+            when HashOf
               return value unless Hash === value
               new_hash = {}
               value.each do |hk, hv|
                 new_hash[hk] = try_convert(klass.value_type, hv)
               end
               new_hash
-            elsif klass.respond_to?(:ancestors)
-              if klass.ancestors.include?(TypeStruct)
-                return nil unless Hash === value
-                klass.from_hash(value)
-              elsif klass.ancestors.include?(Struct)
-                struct = klass.new
-                value.each { |k, v| struct[k] = v }
-                struct
+            else
+              if klass.respond_to?(:ancestors)
+                if klass.ancestors.include?(TypeStruct)
+                  klass.from_hash(value)
+                elsif klass.ancestors.include?(Struct)
+                  struct = klass.new
+                  value.each { |k, v| struct[k] = v }
+                  struct
+                else
+                  value
+                end
               else
                 value
               end
-            else
-              value
             end
           end
         end
