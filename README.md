@@ -33,7 +33,7 @@ h.fetch(:widht) #=> Can detect typo, But too long and cannot know suggestion fro
 # KeyError: key not found: :widht
 ```
 
-**Freedom**
+**Too freedom**
 
 ```ruby
 # Where is from `who` key? Is this expected?
