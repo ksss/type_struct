@@ -12,24 +12,28 @@ class TypeStruct
     def to_s
       "#{self.class.name.split('::').last}(#{@type})"
     end
+    alias inspect to_s
   end
 
   class HashOf
     def to_s
       "#{self.class.name.split('::').last}(#{@key_type}, #{@value_type})"
     end
+    alias inspect to_s
   end
 
   class Interface
     def to_s
       "#<#{self.class.name.split('::').last}(#{@methods.map(&:inspect).join(',')})>"
     end
+    alias inspect to_s
   end
 
   class Union
     def to_s
       "#<#{self.class.name.split('::').last} #{@classes.join('|')}>"
     end
+    alias inspect to_s
   end
 end
 
