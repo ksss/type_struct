@@ -61,7 +61,7 @@ class TypeStruct
             h.each do |key, value|
               key = key.to_sym
               t = type(key)
-              args[key] = try_convert(t, value)
+              args[key] = try_convert(t, key, value)
             end
             new(args)
           end
@@ -84,7 +84,7 @@ class TypeStruct
 
           private
 
-          def try_convert(klass, value)
+          def try_convert(klass, key, value)
             return nil unless !klass.nil? && !value.nil?
 
             case klass
@@ -92,21 +92,26 @@ class TypeStruct
               errors = []
               klass.each do |k|
                 t = begin
-                      try_convert(k, value)
+                      try_convert(k, key, value)
                     rescue TypeError => e
                       errors << e
                       nil
                     end
                 return t if !t.nil?
               end
-              raise UnionNotFoundError, "#{klass} is not found with errors:\n#{errors.join("\n")}"
+              raise UnionNotFoundError, "#{klass} is not found with value `#{value}'\nerrors:\n#{errors.join("\n")}"
             when ArrayOf
-              value.map { |v| try_convert(klass.type, v) }
+              unless Array === value
+                raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
+              end
+              value.map { |v| try_convert(klass.type, key, v) }
             when HashOf
-              return value unless Hash === value
+              unless Hash === value
+                raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
+              end
               new_hash = {}
               value.each do |hk, hv|
-                new_hash[hk] = try_convert(klass.value_type, hv)
+                new_hash[hk] = try_convert(klass.value_type, key, hv)
               end
               new_hash
             else
@@ -117,8 +122,10 @@ class TypeStruct
                   struct = klass.new
                   value.each { |k, v| struct[k] = v }
                   struct
-                else
+                elsif klass === value
                   value
+                else
+                  raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
                 end
               else
                 value

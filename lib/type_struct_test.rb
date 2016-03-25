@@ -124,6 +124,45 @@ module TypeStructTest
     else
       t.error("TypeError dose not raise error")
     end
+
+    hsbn = TypeStruct.new(
+      a: HashOf(Symbol, b) | NilClass,
+    )
+    begin
+      hsbn.from_hash(a: [])
+    rescue TypeStruct::UnionNotFoundError
+    rescue => e
+      t.error("Unexpected error #{e.class}: #{e.message}")
+    else
+      t.error("Unexpected behavior")
+    end
+
+    begin
+      hsbn.from_hash(a: {a: {b: 1.1}})
+    rescue TypeStruct::UnionNotFoundError
+    rescue => e
+      t.error("Unexpected error #{e.class}: #{e.message}")
+    else
+      t.error("Unexpected behavior")
+    end
+
+    begin
+      hsbn.from_hash(a: {"a" => {b: 1}})
+    rescue TypeError
+    rescue => e
+      t.error("Unexpected error #{e.class}: #{e.message}")
+    else
+      t.error("Unexpected behavior")
+    end
+
+    begin
+      hsbn.from_hash(a: {"a" => {b: 1.1}})
+    rescue TypeStruct::UnionNotFoundError
+    rescue => e
+      t.error("Unexpected error #{e.class}: #{e.message}")
+    else
+      t.error("Unexpected behavior")
+    end
   end
 
   def test_array_of(t)
@@ -139,43 +178,124 @@ module TypeStructTest
     end
   end
 
+  def test_array_of_error(t)
+    a = TypeStruct.new(a: ArrayOf(Integer))
+    begin
+      a.from_hash(a: [1.1])
+    rescue TypeError
+    rescue => e
+      t.error("Unexpected error #{e.class}")
+    else
+      t.error("Nothing raised TypeError")
+    end
+
+    b = TypeStruct.new(a: ArrayOf(Integer) | NilClass)
+    begin
+      b.from_hash(a: [1.1])
+    rescue TypeStruct::UnionNotFoundError
+    rescue => e
+      t.error("Unexpected error #{e.class}")
+    else
+      t.error("Nothing raised TypeStruct::UnionNotFoundError")
+    end
+
+    c = TypeStruct.new(c: Integer)
+    d = TypeStruct.new(d: ArrayOf(c) | NilClass)
+    begin
+      d.from_hash(d: [{c: 1.1}])
+    rescue TypeStruct::UnionNotFoundError
+    rescue => e
+      t.error("Unexpected error #{e.class}")
+    else
+      t.error("Nothing raised TypeStruct::UnionNotFoundError")
+    end
+  end
+
   def test_s_from_hash(t)
-    foo = Foo.from_hash(bar: { baz: [1, 2, 3] })
-    unless Foo === foo
+    bar = TypeStruct.new(
+      baz: ArrayOf(Integer | NilClass),
+    )
+    foo = TypeStruct.new(
+      nil: NilClass,
+      bar: bar,
+    )
+
+    f = foo.from_hash(bar: { baz: [1, 2, 3] })
+    unless foo === f
       t.error("return value was break")
     end
 
     begin
-      Foo.from_hash(bar: { baz: [1, 2, "3"] })
-    rescue TypeError
+      foo.from_hash(bar: { baz: [1, 2, "3"] })
+    rescue TypeStruct::UnionNotFoundError
     else
       t.error("'3' is not valid value for Baz.baz:#{Bar.definition.fetch(:baz)}")
     end
 
-    foo = Foo.from_hash("bar" => { "baz" => [1, 2, 3] })
-    unless Foo === foo
+    f = foo.from_hash("bar" => { "baz" => [1, 2, 3] })
+    unless foo === f
       t.error("return value was break")
     end
 
-    foo = Foo.from_hash(bar: { baz: [1, 2, 3] }, nil: nil)
-    unless TypeStruct === foo
+    f = foo.from_hash(bar: { baz: [1, 2, 3] }, nil: nil)
+    unless TypeStruct === f
       t.error("return value type was break")
     end
-    unless Foo === foo
+    unless foo === f
       t.error("return value type was break")
     end
 
     begin
-      Foo.from_hash(bar: { baz: [1, nil, 3] })
+      foo.from_hash(bar: { baz: [1, nil, 3] })
     rescue => e
       t.error("Bar.baz is able to nil but raise error #{e.class}: #{e.message}")
     end
 
     begin
-      Foo.from_hash(bar: { baz: nil })
+      foo.from_hash(bar: { baz: nil })
     rescue TypeError
     else
       t.error("Bar.baz is not able to nil")
+    end
+  end
+
+  def test_s_from_hash_with_array_of(t)
+    a = TypeStruct.new(a: ArrayOf(Integer))
+    begin
+      a.from_hash(a: 1)
+    rescue TypeError => e
+      unless /#a expect ArrayOf\(Integer\) got 1/ =~ e.message
+        t.error("message was changed: #{e.message}")
+      end
+    rescue => e
+      t.error("Unexpected error #{e}")
+    else
+      t.error("Unexpected behavior")
+    end
+  end
+
+  def test_s_from_hash_with_hash_of(t)
+    a = TypeStruct.new(a: HashOf(String, Integer))
+    begin
+      a.from_hash(a: 1)
+    rescue TypeError => e
+      unless /#a expect HashOf\(String, Integer\) got 1/ =~ e.message
+        t.error("message was changed: #{e.message}")
+      end
+    rescue => e
+      t.error("Unexpected error #{e}")
+    else
+      t.error("Unexpected behavior")
+    end
+  end
+
+  def test_s_from_hash_with_not_class(t)
+    a = TypeStruct.new(a: "a")
+    begin
+      a.from_hash(a: "b")
+    rescue TypeError
+    else
+      t.error("Unexpected behavior")
     end
   end
 
@@ -186,13 +306,17 @@ module TypeStructTest
     u = TypeStruct::Union.new(a, b, c)
     d = TypeStruct.new(d: u)
 
-    d.from_hash(d: { b: 1 })
+    begin
+      d.from_hash(d: { b: 1 })
+    rescue => e
+      t.error("Unexpected error was raised #{e.class}: #{e.message}")
+    end
 
     begin
       d.from_hash(d: [b: 1])
     rescue TypeStruct::UnionNotFoundError => err
-      unless /is not found with errors/ =~ err.message
-        t.error("error message was changed")
+      unless /is not found with value/ =~ err.message
+        t.error("error message was changed: '#{err.message}'")
       end
     else
       t.error("error dose not raised")
@@ -201,7 +325,16 @@ module TypeStructTest
     begin
       d.from_hash(d: { b: "a" })
     rescue TypeStruct::UnionNotFoundError => err
-      unless /is not found with errors/ =~ err.message
+      unless /is not found with value/ =~ err.message
+        t.error("error message was changed")
+      end
+      unless /#a expect Integer got nil/ =~ err.message
+        t.error("error message was changed")
+      end
+      unless /#b expect Integer got "a"/ =~ err.message
+        t.error("error message was changed")
+      end
+      unless /#c expect Integer got nil/ =~ err.message
         t.error("error message was changed")
       end
     else
