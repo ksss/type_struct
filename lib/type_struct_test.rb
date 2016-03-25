@@ -12,14 +12,6 @@ module TypeStructTest
     any: Object,
   ); end
 
-  class Quux < Struct.new(:q)
-  end
-
-  class Qux < TypeStruct.new(
-    quux1: Quux,
-    quux2: Quux,
-  ); end
-
   BoolClass = TrueClass | FalseClass
   C = TypeStruct.new(
     a: ArrayOf(BoolClass),
@@ -380,18 +372,25 @@ module TypeStructTest
   end
 
   def test_s_from_hash_with_struct(t)
-    qux = Qux.from_hash(quux1: { q: 1 }, quux2: { q: nil })
-    unless Qux === qux
+    quux = Struct.new(:q)
+
+    qux = TypeStruct.new(
+      quux1: quux,
+      quux2: quux,
+    )
+
+    q = qux.from_hash(quux1: { q: 1 }, quux2: { q: nil })
+    unless qux === q
       t.error("return value was break")
     end
-    unless Quux === qux.quux1
+    unless quux === q.quux1
       t.error("struct type was not applied")
     end
-    unless 1 == qux.quux1.q
-      t.error("mapping failed #{qux.quux.q} != 1")
+    unless 1 == q.quux1.q
+      t.error("mapping failed #{q.quux.q} != 1")
     end
-    unless nil == qux.quux2.q
-      t.error("mapping failed #{qux.quux.q} != nil")
+    unless nil == q.quux2.q
+      t.error("mapping failed #{q.quux.q} != nil")
     end
   end
 
