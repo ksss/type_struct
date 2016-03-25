@@ -57,6 +57,12 @@ class TypeStruct
           alias_method :new, :original_new
 
           def from_hash(h)
+            unless Hash === h
+              h = h.to_hash if h.respond_to?(:to_hash)
+              unless Hash === h
+                raise TypeError, "#{self}.from_hash only accept Hash got `#{h.class}'"
+              end
+            end
             args = {}
             h.each do |key, value|
               key = key.to_sym

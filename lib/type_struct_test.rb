@@ -259,6 +259,26 @@ module TypeStructTest
     end
   end
 
+  def test_s_from_hash_with_other_object(t)
+    a = TypeStruct.new(a: Integer)
+    o = Object.new
+    begin
+      a.from_hash(o)
+    rescue TypeError => e
+    rescue => e
+      t.error("Unexpected error #{e.class}")
+    else
+      t.error("should raise TypeError")
+    end
+
+    def o.to_hash
+      {a: 1}
+    end
+    unless a === a.from_hash(o)
+      t.error("Unexpected behavior")
+    end
+  end
+
   def test_s_from_hash_with_array_of(t)
     a = TypeStruct.new(a: ArrayOf(Integer))
     begin
