@@ -20,15 +20,6 @@ module TypeStructTest
     quux2: Quux,
   ); end
 
-  class Bar < TypeStruct.new(
-    baz: ArrayOf(Integer | NilClass),
-  ); end
-
-  class Foo < TypeStruct.new(
-    nil: NilClass,
-    bar: Bar,
-  ); end
-
   BoolClass = TrueClass | FalseClass
   C = TypeStruct.new(
     a: ArrayOf(BoolClass),
@@ -363,18 +354,26 @@ module TypeStructTest
   end
 
   def test_s_from_hash_equal(t)
-    expect = Foo.new(bar: Bar.new(baz: [1, 2, 3]))
-    actual = Foo.from_hash(bar: { baz: [1, 2, 3] })
+    bar = TypeStruct.new(
+      baz: ArrayOf(Integer | NilClass),
+    )
+    foo = TypeStruct.new(
+      nil: NilClass,
+      bar: bar,
+    )
+
+    expect = foo.new(bar: bar.new(baz: [1, 2, 3]))
+    actual = foo.from_hash(bar: { baz: [1, 2, 3] })
     if expect != actual
       t.error("expect #{expect} got #{actual}")
     end
 
-    noteq = Foo.from_hash(bar: { baz: [1, 2, 4] })
+    noteq = foo.from_hash(bar: { baz: [1, 2, 4] })
     if expect == noteq
       t.error("expect #{expect} not equal #{noteq}")
     end
 
-    noteq = Foo.from_hash(bar: { baz: [1, 2, nil] })
+    noteq = foo.from_hash(bar: { baz: [1, 2, nil] })
     if expect == noteq
       t.error("expect #{expect} not equal #{noteq}")
     end
