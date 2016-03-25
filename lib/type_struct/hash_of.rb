@@ -20,5 +20,6 @@ class TypeStruct
     def to_s
       "#{self.class}(#{@key_type}, #{@value_type})"
     end
+    alias inspect to_s
   end
 end
