@@ -109,7 +109,9 @@ sample.str = 1 #=> TypeError
 
 ### Recursive Mapping
 
-Generate object from hash by recursive
+Generate object from hash by recursive.
+
+Like JSON package of golang and crystal-lang.
 
 ```ruby
 Point = TypeStruct.new(
