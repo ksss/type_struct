@@ -19,16 +19,15 @@ class TypeStruct
 
   def ==(other)
     return false unless TypeStruct === other
-    return false unless to_h == other.to_h
-    true
+    to_h == other.to_h
   end
 
   def []=(k, v)
-    __send__("#{k}=", v)
+    __send__ "#{k}=", v
   end
 
   def [](k)
-    __send__(k)
+    __send__ k
   end
 
   def inspect
