@@ -122,7 +122,7 @@ class TypeStruct
           elsif klass === value
             value
           else
-            raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
+            raise TypeError, "#{self}##{key} expect #{klass} got #{value.inspect}"
           end
         else
           value
@@ -155,6 +155,7 @@ class TypeStruct
           end
         end
       end
+
       if block_given?
         c.module_eval(&block)
       end
