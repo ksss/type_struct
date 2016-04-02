@@ -132,10 +132,17 @@ class TypeStruct
             union_errors << e
           end
         end
+
         raise UnionNotFoundError, "#{klass} is not found with value `#{value}'\nerrors:\n#{union_errors.join("\n")}"
       when ArrayOf
         unless Array === value
-          raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
+          begin
+            raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
+          rescue TypeError => e
+            raise unless errors
+            errors << e
+          end
+          return value
         end
         value.map { |v| try_convert(klass.type, key, v, errors) }
       when HashOf
@@ -155,10 +162,15 @@ class TypeStruct
             struct = klass.new
             value.each { |k, v| struct[k] = v }
             struct
-          elsif klass === value || errors
+          elsif klass === value
             value
           else
-            raise TypeError, "#{self}##{key} expect #{klass} got #{value.inspect}"
+            begin
+              raise TypeError, "#{self}##{key} expect #{klass} got #{value.inspect}"
+            rescue => e
+              raise unless errors
+              errors << e
+            end
           end
         else
           value

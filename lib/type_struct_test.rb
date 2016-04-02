@@ -222,7 +222,7 @@ module TypeStructTest
 
     begin
       foo.from_hash(bar: { baz: nil })
-    rescue TypeError
+    rescue TypeStruct::MultiTypeError
     else
       t.error("Bar.baz is not able to nil")
     end
@@ -252,7 +252,7 @@ module TypeStructTest
     a = TypeStruct.new(a: ArrayOf(Integer))
     begin
       a.from_hash(a: 1)
-    rescue TypeError => e
+    rescue TypeStruct::MultiTypeError => e
       unless /#a expect ArrayOf\(Integer\) got 1/ =~ e.message
         t.error("message was changed: #{e.message}")
       end
@@ -530,12 +530,13 @@ module TypeStructTest
     a = TypeStruct.new(
       a: Integer,
       b: String,
+      c: ArrayOf(String),
     )
     b = TypeStruct.new(
       b: a,
     )
     begin
-      b.from_hash(b: { a: '1', b: 1 })
+      b.from_hash(b: { a: '1', b: 1 , c: /a/})
     rescue TypeStruct::MultiTypeError => err
       unless err.errors.all? { |e| TypeError === e }
         t.error("Empty errors")
@@ -544,6 +545,28 @@ module TypeStructTest
       [
         /a expect Integer got "1"/,
         /b expect String got 1/,
+        %r{c expect ArrayOf\(String\) got /a/},
+      ].each do |reg|
+        unless reg =~ err.message
+          t.error("should match error message #{reg} got #{err.message}")
+        end
+      end
+    end
+  end
+
+  def test_s_from_hash_multi_type_error_with_union(t)
+    a = TypeStruct.new(
+      a: ArrayOf(String) | NilClass,
+    )
+    b = TypeStruct.new(
+      b: a,
+    )
+    begin
+      b.from_hash(b: { a: '1' })
+    rescue TypeStruct::UnionNotFoundError => err
+      [
+        /a expect ArrayOf\(String\) got "1"/,
+        /a expect NilClass got "1"/,
       ].each do |reg|
         unless reg =~ err.message
           t.error("should match error message #{reg} got #{err.message}")
