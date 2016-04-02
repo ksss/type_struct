@@ -167,7 +167,7 @@ module TypeStructTest
       a.from_hash(a: [1.1])
     rescue TypeStruct::MultiTypeError
     rescue => e
-      t.error("Unexpected error #{e.class}")
+      raise
     else
       t.error("Nothing raised TypeError")
     end
@@ -177,7 +177,7 @@ module TypeStructTest
       b.from_hash(a: [1.1])
     rescue TypeStruct::UnionNotFoundError
     rescue => e
-      t.error("Unexpected error #{e.class}")
+      raise
     else
       t.error("Nothing raised TypeStruct::UnionNotFoundError")
     end
@@ -188,7 +188,7 @@ module TypeStructTest
       d.from_hash(d: [{ c: 1.1 }])
     rescue TypeStruct::UnionNotFoundError
     rescue => e
-      t.error("Unexpected error #{e.class}")
+      raise
     else
       t.error("Nothing raised TypeStruct::UnionNotFoundError")
     end
@@ -557,7 +557,7 @@ module TypeStructTest
       b: a,
     )
     begin
-      b.from_hash(b: {a: '1', b: 1})
+      b.from_hash(b: { a: '1', b: 1 })
     rescue TypeStruct::MultiTypeError => err
       unless err.errors.all? { |e| TypeError === e }
         t.error("Empty errors")

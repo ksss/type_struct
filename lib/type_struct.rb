@@ -15,7 +15,7 @@ class TypeStruct
     attr_reader :errors
     def initialize(errors)
       @errors = errors
-      super(build_message)
+      super("\n#{build_message}")
     end
 
     private
@@ -27,7 +27,7 @@ class TypeStruct
           b.absolute_path !~ THIS_LIB_REGEXP
         end
         relative_path = Pathname.new(b.absolute_path).relative_path_from(pwd)
-        "#{relative_path}:#{b.lineno}: #{e}"
+        "#{relative_path}:#{b.lineno}:in #{e.class} #{e}"
       }.join("\n")
     end
   end
