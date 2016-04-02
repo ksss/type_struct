@@ -114,8 +114,6 @@ module TypeStructTest
     begin
       hsbn.from_hash(a: [])
     rescue TypeStruct::UnionNotFoundError
-    rescue => e
-      t.error("Unexpected error #{e.class}: #{e.message}")
     else
       t.error("Unexpected behavior")
     end
@@ -123,8 +121,6 @@ module TypeStructTest
     begin
       hsbn.from_hash(a: { a: { b: 1.1 } })
     rescue TypeStruct::UnionNotFoundError
-    rescue => e
-      t.error("Unexpected error #{e.class}: #{e.message}")
     else
       t.error("Unexpected behavior")
     end
@@ -132,8 +128,6 @@ module TypeStructTest
     begin
       hsbn.from_hash(a: { "a" => { b: 1 } })
     rescue TypeStruct::MultiTypeError
-    rescue => e
-      t.error("Unexpected error #{e.class}: #{e.message}")
     else
       t.error("Unexpected behavior")
     end
@@ -141,8 +135,6 @@ module TypeStructTest
     begin
       hsbn.from_hash(a: { "a" => { b: 1.1 } })
     rescue TypeStruct::UnionNotFoundError
-    rescue => e
-      t.error("Unexpected error #{e.class}: #{e.message}")
     else
       t.error("Unexpected behavior")
     end
@@ -166,8 +158,6 @@ module TypeStructTest
     begin
       a.from_hash(a: [1.1])
     rescue TypeStruct::MultiTypeError
-    rescue => e
-      raise
     else
       t.error("Nothing raised TypeError")
     end
@@ -176,8 +166,6 @@ module TypeStructTest
     begin
       b.from_hash(a: [1.1])
     rescue TypeStruct::UnionNotFoundError
-    rescue => e
-      raise
     else
       t.error("Nothing raised TypeStruct::UnionNotFoundError")
     end
@@ -187,8 +175,6 @@ module TypeStructTest
     begin
       d.from_hash(d: [{ c: 1.1 }])
     rescue TypeStruct::UnionNotFoundError
-    rescue => e
-      raise
     else
       t.error("Nothing raised TypeStruct::UnionNotFoundError")
     end
@@ -270,8 +256,6 @@ module TypeStructTest
       unless /#a expect ArrayOf\(Integer\) got 1/ =~ e.message
         t.error("message was changed: #{e.message}")
       end
-    rescue => e
-      t.error("Unexpected error #{e}")
     else
       t.error("Unexpected behavior")
     end
@@ -285,8 +269,6 @@ module TypeStructTest
       unless /#a expect HashOf\(String, Integer\) got 1/ =~ e.message
         t.error("message was changed: #{e.message}")
       end
-    rescue => e
-      t.error("Unexpected error #{e}")
     else
       t.error("Unexpected behavior")
     end
@@ -309,11 +291,7 @@ module TypeStructTest
     u = TypeStruct::Union.new(a, b, c)
     d = TypeStruct.new(d: u)
 
-    begin
-      d.from_hash(d: { b: 1 })
-    rescue => e
-      t.error("Unexpected error was raised #{e.class}: #{e.message}")
-    end
+    d.from_hash(d: { b: 1 })
 
     begin
       d.from_hash(d: [b: 1])
