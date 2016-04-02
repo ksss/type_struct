@@ -121,7 +121,7 @@ module TypeStructTest
     end
 
     begin
-      hsbn.from_hash(a: {a: {b: 1.1}})
+      hsbn.from_hash(a: { a: { b: 1.1 } })
     rescue TypeStruct::UnionNotFoundError
     rescue => e
       t.error("Unexpected error #{e.class}: #{e.message}")
@@ -130,7 +130,7 @@ module TypeStructTest
     end
 
     begin
-      hsbn.from_hash(a: {"a" => {b: 1}})
+      hsbn.from_hash(a: { "a" => { b: 1 } })
     rescue TypeStruct::MultiTypeError
     rescue => e
       t.error("Unexpected error #{e.class}: #{e.message}")
@@ -139,7 +139,7 @@ module TypeStructTest
     end
 
     begin
-      hsbn.from_hash(a: {"a" => {b: 1.1}})
+      hsbn.from_hash(a: { "a" => { b: 1.1 } })
     rescue TypeStruct::UnionNotFoundError
     rescue => e
       t.error("Unexpected error #{e.class}: #{e.message}")
@@ -185,7 +185,7 @@ module TypeStructTest
     c = TypeStruct.new(c: Integer)
     d = TypeStruct.new(d: ArrayOf(c) | NilClass)
     begin
-      d.from_hash(d: [{c: 1.1}])
+      d.from_hash(d: [{ c: 1.1 }])
     rescue TypeStruct::UnionNotFoundError
     rescue => e
       t.error("Unexpected error #{e.class}")
@@ -255,7 +255,7 @@ module TypeStructTest
     end
 
     def o.to_hash
-      {a: 1}
+      { a: 1 }
     end
     unless a === a.from_hash(o)
       t.error("Unexpected behavior")
