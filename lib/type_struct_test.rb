@@ -165,7 +165,7 @@ module TypeStructTest
     a = TypeStruct.new(a: ArrayOf(Integer))
     begin
       a.from_hash(a: [1.1])
-    rescue TypeError
+    rescue TypeStruct::MultiTypeError
     rescue => e
       t.error("Unexpected error #{e.class}")
     else
@@ -545,6 +545,32 @@ module TypeStructTest
       raise err
     else
       t.error("Nothing raised an error")
+    end
+  end
+
+  def test_s_from_hash_multi_type_error(t)
+    a = TypeStruct.new(
+      a: Integer,
+      b: String,
+    )
+    b = TypeStruct.new(
+      b: a,
+    )
+    begin
+      b.from_hash(b: {a: '1', b: 1})
+    rescue TypeStruct::MultiTypeError => err
+      unless err.errors.all? { |e| TypeError === e }
+        t.error("Empty errors")
+      end
+
+      [
+        /a expect Integer got "1"/,
+        /b expect String got 1/,
+      ].each do |reg|
+        unless reg =~ err.message
+          t.error("should match error message #{reg} got #{err.message}")
+        end
+      end
     end
   end
 

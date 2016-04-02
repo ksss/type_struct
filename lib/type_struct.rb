@@ -91,10 +91,14 @@ class TypeStruct
         end
       end
       args = {}
+      errors = []
       h.each do |key, value|
         key = key.to_sym
         t = type(key)
-        args[key] = try_convert(t, key, value)
+        args[key] = try_convert(t, key, value, errors)
+      end
+      unless errors.empty?
+        raise MultiTypeError, errors
       end
       new(args)
     end
@@ -117,30 +121,30 @@ class TypeStruct
 
     private
 
-    def try_convert(klass, key, value)
+    def try_convert(klass, key, value, errors)
       case klass
       when Union
-        errors = []
+        union_errors = []
         klass.each do |k|
           begin
-            return try_convert(k, key, value)
+            return try_convert(k, key, value, nil)
           rescue TypeError, MultiTypeError => e
-            errors << e
+            union_errors << e
           end
         end
-        raise UnionNotFoundError, "#{klass} is not found with value `#{value}'\nerrors:\n#{errors.join("\n")}"
+        raise UnionNotFoundError, "#{klass} is not found with value `#{value}'\nerrors:\n#{union_errors.join("\n")}"
       when ArrayOf
         unless Array === value
           raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
         end
-        value.map { |v| try_convert(klass.type, key, v) }
+        value.map { |v| try_convert(klass.type, key, v, errors) }
       when HashOf
         unless Hash === value
           raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
         end
         new_hash = {}
         value.each do |hk, hv|
-          new_hash[hk] = try_convert(klass.value_type, key, hv)
+          new_hash[hk] = try_convert(klass.value_type, key, hv, errors)
         end
         new_hash
       else
@@ -151,7 +155,7 @@ class TypeStruct
             struct = klass.new
             value.each { |k, v| struct[k] = v }
             struct
-          elsif klass === value
+          elsif klass === value || errors
             value
           else
             raise TypeError, "#{self}##{key} expect #{klass} got #{value.inspect}"
