@@ -48,8 +48,9 @@ module TypeStructBenchmarkTest
 
   def benchmark_from_hash(b)
     i = 0
+    hash = { e: { d: { c: { b: { a: 1 } } } } }
     while i < b.n
-      E.from_hash(e: { d: { c: { b: { a: 1 } } } })
+      E.from_hash(hash)
       i += 1
     end
   end
