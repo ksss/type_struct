@@ -89,7 +89,7 @@ module TypeStructTest
       hc.new(
         a: [],
       )
-    rescue TypeError
+    rescue TypeStruct::MultiTypeError
     else
       t.error("TypeError was not railsed")
     end
@@ -131,7 +131,7 @@ module TypeStructTest
 
     begin
       hsbn.from_hash(a: {"a" => {b: 1}})
-    rescue TypeError
+    rescue TypeStruct::MultiTypeError
     rescue => e
       t.error("Unexpected error #{e.class}: #{e.message}")
     else
@@ -296,7 +296,7 @@ module TypeStructTest
     a = TypeStruct.new(a: "a")
     begin
       a.from_hash(a: "b")
-    rescue TypeError
+    rescue TypeStruct::MultiTypeError
     else
       t.error("Unexpected behavior")
     end
@@ -513,6 +513,38 @@ module TypeStructTest
       unless dummy[k] == v
         t.error("expect #{dummy[k]} got #{v}")
       end
+    end
+  end
+
+  def test_multi_type_error(t)
+    a = TypeStruct.new(
+      a: Integer,
+      b: Integer,
+      c: Integer,
+    )
+    begin
+      a.new(
+        a: 'a',
+        b: 1,
+        c: '1',
+      )
+    rescue TypeStruct::MultiTypeError => err
+      unless err.errors.all? { |e| TypeError === e }
+        t.error("Empty errors")
+      end
+
+      [
+        /a expect Integer got "a"/,
+        /c expect Integer got "1"/,
+      ].each do |reg|
+        unless reg =~ err.message
+          t.error("should match error message #{reg} got #{err.message}")
+        end
+      end
+    rescue => err
+      raise err
+    else
+      t.error("Nothing raised an error")
     end
   end
 

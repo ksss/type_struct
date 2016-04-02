@@ -16,6 +16,20 @@ module TypeStructBenchmarkTest
     end
   end
 
+  def benchmark_new_instance(b)
+    t = TypeStruct.new(
+      a: String,
+      b: Integer,
+      c: Regexp,
+    )
+    hash = { a: "aaa".freeze, b: 1, c: /abc/ }
+    i = 0
+    while i < b.n
+      t.new(hash)
+      i += 1
+    end
+  end
+
   A = TypeStruct.new(
     a: Integer,
   )

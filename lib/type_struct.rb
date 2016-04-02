@@ -1,3 +1,5 @@
+require 'pathname'
+
 class TypeStruct
   require "type_struct/union"
   require "type_struct/array_of"
@@ -7,13 +9,47 @@ class TypeStruct
 
   UnionNotFoundError = Class.new(StandardError)
 
+  class MultiTypeError < StandardError
+    THIS_LIB_REGEXP = %r{lib/type_struct[./]}
+
+    attr_reader :errors
+    def initialize(errors)
+      @errors = errors
+      super(build_message)
+    end
+
+    private
+
+    def build_message
+      pwd = Pathname.new(Dir.pwd)
+      @errors.map { |e|
+        b = e.backtrace_locations.find do |b|
+          b.absolute_path !~ THIS_LIB_REGEXP
+        end
+        relative_path = Pathname.new(b.absolute_path).relative_path_from(pwd)
+        "#{relative_path}:#{b.lineno}: #{e}"
+      }.join("\n")
+    end
+  end
+
   def initialize(arg)
     sym_arg = {}
     arg.each do |k, v|
       sym_arg[k.to_sym] = v
     end
+    errors = []
     self.class.members.each do |k|
-      self[k] = sym_arg[k]
+      unless self.class.valid?(k, sym_arg[k])
+        begin
+          raise TypeError, "#{self.class}##{k} expect #{self.class.type(k)} got #{sym_arg[k].inspect}"
+        rescue TypeError => e
+          errors << e
+        end
+      end
+      instance_variable_set("@#{k}", sym_arg[k])
+    end
+    if !errors.empty?
+      raise MultiTypeError, errors
     end
   end
 
@@ -82,19 +118,15 @@ class TypeStruct
     private
 
     def try_convert(klass, key, value)
-      return nil unless !klass.nil? && !value.nil?
-
       case klass
       when Union
         errors = []
         klass.each do |k|
-          t = begin
-                try_convert(k, key, value)
-              rescue TypeError => e
-                errors << e
-                nil
-              end
-          return t if !t.nil?
+          begin
+            return try_convert(k, key, value)
+          rescue TypeError, MultiTypeError => e
+            errors << e
+          end
         end
         raise UnionNotFoundError, "#{klass} is not found with value `#{value}'\nerrors:\n#{errors.join("\n")}"
       when ArrayOf
