@@ -249,12 +249,17 @@ module TypeStructTest
   end
 
   def test_s_from_hash_with_array_of(t)
-    a = TypeStruct.new(a: ArrayOf(Integer))
+    a = TypeStruct.new(a: ArrayOf(Integer), b: Integer)
     begin
-      a.from_hash(a: 1)
+      a.from_hash(a: 1, b: 'a')
     rescue TypeStruct::MultiTypeError => e
-      unless /#a expect ArrayOf\(Integer\) got 1/ =~ e.message
-        t.error("message was changed: #{e.message}")
+      [
+        /#a expect ArrayOf\(Integer\) got 1/,
+        /#b expect Integer got "a"/
+      ].each do |expect|
+        unless expect =~ e.message
+          t.error("message was changed: #{e.message}")
+        end
       end
     else
       t.error("Unexpected behavior")
