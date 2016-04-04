@@ -173,6 +173,7 @@ class TypeStruct
               raise unless errors
               errors << e
             end
+            value
           end
         else
           value
