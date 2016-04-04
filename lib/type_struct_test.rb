@@ -255,7 +255,7 @@ module TypeStructTest
     rescue TypeStruct::MultiTypeError => e
       [
         /#a expect ArrayOf\(Integer\) got 1/,
-        /#b expect Integer got "a"/
+        /#b expect Integer got "a"/,
       ].each do |expect|
         unless expect =~ e.message
           t.error("message was changed: #{e.message}")
@@ -546,7 +546,7 @@ module TypeStructTest
       b: a,
     )
     begin
-      b.from_hash(b: { a: '1', b: 1 , c: /a/})
+      b.from_hash(b: { a: '1', b: 1, c: /a/ })
     rescue TypeStruct::MultiTypeError => err
       unless err.errors.all? { |e| TypeError === e }
         t.error("Empty errors")
