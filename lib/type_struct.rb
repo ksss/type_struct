@@ -37,19 +37,18 @@ class TypeStruct
       sym_arg[k.to_sym] = v
     end
     errors = []
-    self.class.members.each do |k|
-      unless self.class.valid?(k, sym_arg[k])
+    klass = self.class
+    klass.members.each do |k|
+      unless klass.valid?(k, sym_arg[k])
         begin
-          raise TypeError, "#{self.class}##{k} expect #{self.class.type(k)} got #{sym_arg[k].inspect}"
+          raise TypeError, "#{klass}##{k} expect #{klass.type(k)} got #{sym_arg[k].inspect}"
         rescue TypeError => e
           errors << e
         end
       end
       instance_variable_set("@#{k}", sym_arg[k])
     end
-    if !errors.empty?
-      raise MultiTypeError, errors
-    end
+    raise MultiTypeError, errors unless errors.empty?
   end
 
   def ==(other)
@@ -96,9 +95,7 @@ class TypeStruct
         t = type(key)
         args[key] = try_convert(t, key, value, errors)
       end
-      unless errors.empty?
-        raise MultiTypeError, errors
-      end
+      raise MultiTypeError, errors unless errors.empty?
       new(args)
     end
 
