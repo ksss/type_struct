@@ -103,7 +103,7 @@ module TypeStructTest
 
     begin
       hh = hc.from_hash(a: 1)
-    rescue TypeError
+    rescue TypeStruct::MultiTypeError
     else
       t.error("TypeError dose not raise error")
     end
@@ -267,12 +267,17 @@ module TypeStructTest
   end
 
   def test_s_from_hash_with_hash_of(t)
-    a = TypeStruct.new(a: HashOf(String, Integer))
+    a = TypeStruct.new(a: HashOf(String, Integer), b: Integer)
     begin
-      a.from_hash(a: 1)
-    rescue TypeError => e
-      unless /#a expect HashOf\(String, Integer\) got 1/ =~ e.message
-        t.error("message was changed: #{e.message}")
+      a.from_hash(a: 1, b: 'a')
+    rescue TypeStruct::MultiTypeError => e
+      [
+        /#a expect HashOf\(String, Integer\) got 1/,
+        /#b expect Integer got "a"/,
+      ].each do |expect|
+        unless expect =~ e.message
+          t.error("message was changed: #{e.message}")
+        end
       end
     else
       t.error("Unexpected behavior")

@@ -143,7 +143,13 @@ class TypeStruct
         value.map { |v| try_convert(klass.type, key, v, errors) }
       when HashOf
         unless Hash === value
-          raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
+          begin
+            raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
+          rescue TypeError => e
+            raise unless errors
+            errors << e
+          end
+          return value
         end
         new_hash = {}
         value.each do |hk, hv|
