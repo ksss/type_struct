@@ -16,6 +16,14 @@ module TypeStructBenchmarkTest
     end
   end
 
+  def benchmark_struct_new(b)
+    i = 0
+    while i < b.n
+      Struct.new(:a, :b, :c)
+      i += 1
+    end
+  end
+
   def benchmark_new_instance(b)
     t = TypeStruct.new(
       a: String,
@@ -26,6 +34,18 @@ module TypeStructBenchmarkTest
     i = 0
     while i < b.n
       t.new(hash)
+      i += 1
+    end
+  end
+
+  def benchmark_struct_new_instance(b)
+    t = Struct.new(:a, :b, :c)
+    a1 = "aaa".freeze
+    a2 = 1
+    a3 = /abc/
+    i = 0
+    while i < b.n
+      t.new(a1, a2, a3)
       i += 1
     end
   end
