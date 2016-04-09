@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["ksss"]
   spec.email         = ["co000ri@gmail.com"]
 
-  spec.summary       = %q{Imitating static typed struct.}
-  spec.description   = %q{Imitating static typed struct.}
+  spec.summary       = %q{Pseudo type system on struct.}
+  spec.description   = %q{Pseudo type system on struct.}
   spec.homepage      = "https://github.com/ksss/type_struct"
   spec.license       = "MIT"
 
