@@ -2,6 +2,7 @@ require 'pathname'
 
 class TypeStruct
   require "type_struct/union"
+  require "type_struct/type_of"
   require "type_struct/array_of"
   require "type_struct/hash_of"
   require "type_struct/interface"
@@ -91,9 +92,11 @@ class TypeStruct
     def valid?(k, v)
       definition[k] === v
     end
+  end
 
-    private
+  private
 
+  class << self
     def try_convert(klass, key, value, errors)
       case klass
       when Union
@@ -107,32 +110,8 @@ class TypeStruct
         end
 
         raise UnionNotFoundError, "#{klass} is not found with value `#{value}'\nerrors:\n#{union_errors.join("\n")}"
-      when ArrayOf
-        unless Array === value
-          begin
-            raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
-          rescue TypeError => e
-            raise unless errors
-            errors << e
-          end
-          return value
-        end
-        value.map { |v| try_convert(klass.type, key, v, errors) }
-      when HashOf
-        unless Hash === value
-          begin
-            raise TypeError, "#{self}##{key} expect #{klass.inspect} got #{value.inspect}"
-          rescue TypeError => e
-            raise unless errors
-            errors << e
-          end
-          return value
-        end
-        new_hash = {}
-        value.each do |hk, hv|
-          new_hash[hk] = try_convert(klass.value_type, key, hv, errors)
-        end
-        new_hash
+      when TypeOf
+        klass.try_convert(key, value, errors)
       else
         if klass.respond_to?(:ancestors)
           if klass.ancestors.include?(TypeStruct)
