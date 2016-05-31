@@ -27,6 +27,7 @@ class TypeStruct
         end
       end
       instance_variable_set("@#{k}", sym_h[k])
+      sym_h[k].freeze if self.class.frozen?
     end
     raise MultiTypeError, errors unless errors.empty?
   end
@@ -90,6 +91,15 @@ class TypeStruct
 
     def valid?(k, v)
       definition[k] === v
+    end
+
+    def freeze
+      definition.each do |k, _|
+        define_method("#{k}=") do |*|
+          raise RuntimeError, "can't modify frozen #{self}##{k}"
+        end
+      end
+      super
     end
   end
 

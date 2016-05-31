@@ -662,6 +662,27 @@ module TypeStructTest
     end
   end
 
+  def test_s_freeze(t)
+    t_class = TypeStruct.new(foo: String)
+    t_class.freeze
+    unless t_class.frozen?
+      t.error("should be frozen")
+    end
+    t_instance = t_class.new(foo: "bar")
+
+    [
+      [->{ t_instance.foo << "baz" }, RuntimeError],
+      [->{ t_instance.foo = "baz" }, RuntimeError]
+    ].each do |proc, err|
+      begin
+        proc.call
+      rescue err
+      else
+        t.error("expect raise #{err}")
+      end
+    end
+  end
+
   class Sample < TypeStruct.new(
     str: String,
     reg: /exp/,
