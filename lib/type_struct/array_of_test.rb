@@ -1,4 +1,4 @@
-require "type_struct/array_of"
+require "type_struct/ext"
 
 module ArrayOfTest
   def test_initialize(t)

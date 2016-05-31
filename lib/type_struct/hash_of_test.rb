@@ -1,4 +1,4 @@
-require "type_struct/hash_of"
+require "type_struct/ext"
 
 module HashOfTest
   def test_initialize(t)

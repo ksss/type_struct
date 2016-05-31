@@ -1,4 +1,4 @@
-require "type_struct/interface"
+require "type_struct"
 
 module InterfaceTest
   Interface = TypeStruct::Interface
