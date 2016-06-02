@@ -164,7 +164,7 @@ class TypeStruct
     def new(**args, &block)
       c = Class.new(TypeStruct) do
         extend ClassMethods
-        const_set :DEFINITION, args
+        const_set :DEFINITION, args.freeze
 
         class << self
           alias_method :new, :original_new
