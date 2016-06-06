@@ -9,21 +9,24 @@ class TypeStruct
   require "type_struct/version"
 
   def initialize(arg = {})
-    sym_arg = {}
-    arg.each do |k, v|
-      sym_arg[k.to_sym] = v
+    unless h = Hash.try_convert(arg)
+      raise TypeError, "no implicit conversion from #{arg} to Hash"
+    end
+    sym_h = {}
+    h.each do |k, v|
+      sym_h[k.to_sym] = v
     end
     errors = []
     klass = self.class
     klass.members.each do |k|
-      unless klass.valid?(k, sym_arg[k])
+      unless klass.valid?(k, sym_h[k])
         begin
-          raise TypeError, "#{klass}##{k} expect #{klass.type(k)} got #{sym_arg[k].inspect}"
+          raise TypeError, "#{klass}##{k} expect #{klass.type(k)} got #{sym_h[k].inspect}"
         rescue TypeError => e
           errors << e
         end
       end
-      instance_variable_set("@#{k}", sym_arg[k])
+      instance_variable_set("@#{k}", sym_h[k])
     end
     raise MultiTypeError, errors unless errors.empty?
   end
