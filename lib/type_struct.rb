@@ -8,7 +8,7 @@ class TypeStruct
   require "type_struct/exceptions"
   require "type_struct/version"
 
-  def initialize(arg)
+  def initialize(arg = {})
     sym_arg = {}
     arg.each do |k, v|
       sym_arg[k.to_sym] = v
