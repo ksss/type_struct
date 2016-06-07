@@ -468,6 +468,30 @@ module TypeStructTest
     end
   end
 
+  def test_initialize_with_empty_argument(t)
+    a = TypeStruct.new(foo: String | NilClass).new
+    unless a.foo.nil?
+      t.error("a.foo expect nil got #{a.foo}")
+    end
+  end
+
+  def test_initialize_with_to_hash(t)
+    t = TypeStruct.new(foo: String)
+    o = Object.new
+    begin
+      t.new(o)
+    rescue TypeError
+    else
+      t.error("expect TypeError")
+    end
+    def o.to_hash
+      {foo: "a"}
+    end
+    unless t.new(o).foo == "a"
+      t.error(%(expect "a" got #{t.new(o).foo}))
+    end
+  end
+
   def test_eq(t)
     dummy1 = Dummy.new(str: "aaa", num: 123, reg: "abc", ary: [1.1, 1], any: [1, "bbb"])
     dummy2 = Dummy.new(str: "aaa", num: 123, reg: "abc", ary: [1.1, 1], any: [1, "bbb"])
