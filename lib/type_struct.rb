@@ -64,7 +64,7 @@ class TypeStruct
   module ClassMethods
     def from_hash(arg)
       unless h = Hash.try_convert(arg)
-        raise TypeError, "#{self}.from_hash only accept Hash got `#{h.class}'"
+        raise TypeError, "no implicit conversion from #{arg} to Hash"
       end
       args = {}
       errors = []
