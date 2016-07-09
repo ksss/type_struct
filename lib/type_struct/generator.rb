@@ -42,8 +42,6 @@ class TypeStruct
           io.puts "  #{key}: Object,"
         when TrueClass, FalseClass
           io.puts "  #{key}: TrueClass | FalseClass,"
-        when Fixnum
-          io.puts "  #{key}: Integer"
         else
           io.puts "  #{key}: #{value.class},"
         end
