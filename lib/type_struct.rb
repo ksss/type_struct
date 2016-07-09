@@ -61,12 +61,9 @@ class TypeStruct
   end
 
   module ClassMethods
-    def from_hash(h)
-      unless Hash === h
-        h = h.to_hash if h.respond_to?(:to_hash)
-        unless Hash === h
-          raise TypeError, "#{self}.from_hash only accept Hash got `#{h.class}'"
-        end
+    def from_hash(arg)
+      unless h = Hash.try_convert(arg)
+        raise TypeError, "#{self}.from_hash only accept Hash got `#{h.class}'"
       end
       args = {}
       errors = []
@@ -94,9 +91,9 @@ class TypeStruct
     def valid?(k, v)
       definition[k] === v
     end
+  end
 
-    private
-
+  class << self
     def try_convert(klass, key, value, errors)
       case klass
       when Union
@@ -160,9 +157,7 @@ class TypeStruct
         end
       end
     end
-  end
 
-  class << self
     alias original_new new
     def new(**args, &block)
       c = Class.new(TypeStruct) do
