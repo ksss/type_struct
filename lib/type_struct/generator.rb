@@ -37,6 +37,7 @@ class TypeStruct
           else
             type_struct = key.to_s.gsub(/e?s\z/, '').split('_').map(&:capitalize).join
             parse(type_struct, value)
+            io.puts "  #{key}: #{type_struct},"
           end
         when NilClass
           io.puts "  #{key}: Object,"
