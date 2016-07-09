@@ -22,34 +22,36 @@ class TypeStruct
       io = StringIO.new
       io.puts "#{name} = TypeStruct.new("
       h.each do |key, value|
-        case value
-        when Array
-          if value.empty?
-            io.puts "  #{key}: Array,"
-          else
-            type_struct = key.to_s.gsub(/s\z/, '').split('_').map(&:capitalize).join
-            parse(type_struct, value.first)
-            io.puts "  #{key}: ArrayOf(#{type_struct}),"
-          end
-        when Hash
-          if value.empty?
-            io.puts "  #{key}: Hash,"
-          else
-            type_struct = key.to_s.gsub(/e?s\z/, '').split('_').map(&:capitalize).join
-            parse(type_struct, value)
-            io.puts "  #{key}: #{type_struct},"
-          end
-        when NilClass
-          io.puts "  #{key}: Object,"
-        when TrueClass, FalseClass
-          io.puts "  #{key}: TrueClass | FalseClass,"
-        else
-          io.puts "  #{key}: #{value.class},"
-        end
+        io.puts "  #{key}: #{parse_one(io, key, value)},"
       end
       io.puts ")"
       @io.print io.string
       @io.string
+    end
+
+    def parse_one(io, key, value)
+      case value
+      when Array
+        if value.empty?
+          "Array"
+        else
+          "ArrayOf(#{parse_one(io, key, value.first)})"
+        end
+      when Hash
+        if value.empty?
+          "Hash"
+        else
+          type_struct = key.to_s.gsub(/e?s\z/, '').split('_').map(&:capitalize).join
+          parse(type_struct, value)
+          type_struct
+        end
+      when NilClass
+        "Object"
+      when TrueClass, FalseClass
+        "TrueClass | FalseClass"
+      else
+        value.class.to_s
+      end
     end
   end
 end
