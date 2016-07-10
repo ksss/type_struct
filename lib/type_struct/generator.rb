@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TypeStruct
   # Respects:
   #   http://json2struct.mervine.net/
