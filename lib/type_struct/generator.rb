@@ -45,6 +45,8 @@ class TypeStruct
           parse(type_struct, value)
           type_struct
         end
+      when Fixnum, Bignum
+        "Integer"
       when NilClass
         "Object"
       when TrueClass, FalseClass
