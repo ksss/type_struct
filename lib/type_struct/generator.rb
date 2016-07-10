@@ -41,7 +41,7 @@ class TypeStruct
         if value.empty?
           "Hash"
         else
-          type_struct = key.to_s.gsub(/e?s\z/, '').split('_').map(&:capitalize).join
+          type_struct = key.to_s.gsub(/s\z/, '').split('_').map(&:capitalize).join
           parse(type_struct, value)
           type_struct
         end
