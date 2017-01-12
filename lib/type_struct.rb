@@ -56,7 +56,7 @@ class TypeStruct
   def to_h
     m = {}
     self.class.members.each do |k|
-      m[k] = self[k]
+      m[k] = self[k].is_a?(TypeStruct) ? self[k].to_h : self[k]
     end
     m
   end
