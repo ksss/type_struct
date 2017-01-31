@@ -250,12 +250,13 @@ module TypeStructTest
 
   def test_s_from_hash_with_array_of(t)
     a = TypeStruct.new(a: ArrayOf(Integer), b: Integer)
+    line = __LINE__ + 2
     begin
       a.from_hash(a: 1, b: 'a')
     rescue TypeStruct::MultiTypeError => e
       [
-        /#a expect ArrayOf\(Integer\) got 1/,
-        /#b expect Integer got "a"/,
+        %r{test/type_struct_test.rb:#{line}:in TypeError.*?#a expect ArrayOf\(Integer\) got 1}o,
+        %r{test/type_struct_test.rb:#{line}:in TypeError.*?#b expect Integer got "a"}o,
       ].each do |expect|
         unless expect =~ e.message
           t.error("message was changed: #{e.message}")
