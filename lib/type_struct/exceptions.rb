@@ -18,7 +18,7 @@ class TypeStruct
           b.absolute_path !~ THIS_LIB_REGEXP
         end
         pathname = Pathname.new(b.absolute_path)
-        relative_path = if pathname.absolute?
+        relative_path = if pathname.absolute? && PWD.absolute?
           pathname.relative_path_from(PWD)
         else
           b.absolute_path
