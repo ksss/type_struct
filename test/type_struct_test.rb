@@ -31,6 +31,13 @@ module TypeStructTest
     e: ArrayOf(B),
     f: HashOf(String, Integer),
   )
+  Child = TypeStruct.new(
+    str: String
+  )
+  Parent = TypeStruct.new(
+    str: String,
+    child: Child
+  )
 
   def test_s_from_hash_a(t)
     a = A.from_hash(
@@ -525,6 +532,17 @@ module TypeStructTest
     expects.each do |k, v|
       unless dummy[k] == v
         t.error("expect #{dummy[k]} got #{v}")
+      end
+    end
+  end
+
+  def test_to_h_nested_type_struct(t)
+    expects = { str: "aaa", child: { str: "bbb" } }
+
+    parent = Parent.new(str: "aaa", child: Child.new(str: "bbb")).to_h
+    expects.each do |k, v|
+      unless parent[k] == v
+        t.error("expect #{parent[k]} got #{v}")
       end
     end
   end
