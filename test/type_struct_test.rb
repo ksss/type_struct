@@ -228,6 +228,28 @@ module TypeStructTest
     end
   end
 
+  def test_s_from_hash_with_non_alphabet(t)
+    issues_8 = TypeStruct.new(:'hoge-id' => String)
+    v = begin
+      issues_8.from_hash('hoge-id' => '123456')
+    rescue => e
+      t.error("regression! https://github.com/ksss/type_struct/issues/8")
+    end
+    unless v['hoge-id'] == '123456'
+      t.error("regression! https://github.com/ksss/type_struct/issues/8")
+    end
+
+    type = TypeStruct.new(:'\"\\\/\b\f\n\r\t\uffff' => Integer)
+    v = begin
+      type.from_hash('\"\\\/\b\f\n\r\t\uffff' => 123456)
+    rescue => e
+      t.error("regression! https://github.com/ksss/type_struct/issues/8")
+    end
+    unless v['\"\\\/\b\f\n\r\t\uffff'] == 123456
+      t.error("regression! https://github.com/ksss/type_struct/issues/8")
+    end
+  end
+
   def test_s_from_hash_with_other_object(t)
     a = TypeStruct.new(a: Integer)
     o = Object.new
