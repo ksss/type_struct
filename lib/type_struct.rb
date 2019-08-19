@@ -26,10 +26,10 @@ class TypeStruct
           errors << e
         end
       end
-      instance_variable_set("@#{k}", sym_h[k])
       sym_h[k].freeze if self.class.frozen?
     end
     raise MultiTypeError, errors unless errors.empty?
+    @__store = sym_h
   end
 
   def ==(other)
@@ -180,14 +180,14 @@ class TypeStruct
 
         args.each_key do |k|
           define_method(k) do
-            instance_variable_get("@#{k}")
+            @__store[k]
           end
 
           define_method("#{k}=") do |v|
             unless self.class.valid?(k, v)
               raise TypeError, "#{self.class}##{k} expect #{self.class.type(k)} got #{v.inspect}"
             end
-            instance_variable_set("@#{k}", v)
+            @__store[k] = v
           end
         end
       end
