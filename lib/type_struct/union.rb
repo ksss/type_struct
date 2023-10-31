@@ -31,7 +31,9 @@ class TypeStruct
 
     module Ext
       refine Class do
-        include Unionable
+        def |(other)
+          Union.new(self, other)
+        end
       end
     end
   end

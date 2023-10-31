@@ -1,7 +1,5 @@
 # TypeStruct
 
-[![Build Status](https://travis-ci.org/ksss/type_struct.svg)](https://travis-ci.org/ksss/type_struct)
-
 Imitating static typed struct.
 
 All type is checked by `===` method.
