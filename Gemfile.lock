@@ -10,7 +10,7 @@ GEM
     rgot (1.4.0)
 
 PLATFORMS
-  arm64-darwin-22
+  ruby
 
 DEPENDENCIES
   bundler
