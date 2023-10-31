@@ -1,0 +1,22 @@
+PATH
+  remote: .
+  specs:
+    type_struct (0.8.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (13.1.0)
+    rgot (1.4.0)
+
+PLATFORMS
+  arm64-darwin-22
+
+DEPENDENCIES
+  bundler
+  rake
+  rgot
+  type_struct!
+
+BUNDLED WITH
+   2.4.18
