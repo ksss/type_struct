@@ -14,6 +14,11 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/ksss/type_struct"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{_test.rb}) }
+  spec.files         = Dir.chdir(File.expand_path(__dir__)) do
+    [
+      %w[LICENSE.txt README.md],
+      Dir.glob("lib/**/*.*").grep_v(/_test\.rb\z/),
+    ].flatten
+  end
   spec.require_paths = ["lib"]
 end

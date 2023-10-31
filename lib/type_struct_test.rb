@@ -277,8 +277,8 @@ module TypeStructTest
       a.from_hash(a: 1, b: 'a')
     rescue TypeStruct::MultiTypeError => e
       [
-        %r{test/type_struct_test.rb:#{line}:in TypeError.*?#a expect ArrayOf\(Integer\) got 1}o,
-        %r{test/type_struct_test.rb:#{line}:in TypeError.*?#b expect Integer got "a"}o,
+        %r{lib/type_struct_test.rb:#{line}:in TypeError.*?#a expect ArrayOf\(Integer\) got 1}o,
+        %r{lib/type_struct_test.rb:#{line}:in TypeError.*?#b expect Integer got "a"}o,
       ].each do |expect|
         unless expect =~ e.message
           t.error("message was changed: #{e.message}")
