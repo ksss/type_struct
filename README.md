@@ -102,7 +102,7 @@ p sample.str
 #=> "instance of String"
 
 sample.string #=> NoMethodError
-sample.str = 1 #=> TypeError
+sample.str = 1 #=> TypeStruct::TypeError
 ```
 
 ### Recursive Mapping
@@ -184,8 +184,8 @@ Baz = TypeStruct.new(
 )
 p Baz.new(qux: { "a" => [1, 2, 3] }) #=> #<Baz qux={"a"=>[1, 2, 3]}>
 p Baz.from_hash(qux: { "a" => [1, 2, 3] }) #<Baz qux={"a"=>[1, 2, 3]}>
-p Baz.new(qux: { :a  => [1, 2, 3] }) #=> TypeError
-p Baz.new(qux: { "a" => [1, 2, nil] }) #=> TypeError
+p Baz.new(qux: { :a  => [1, 2, 3] }) #=> TypeStruct::TypeError
+p Baz.new(qux: { "a" => [1, 2, nil] }) #=> TypeStruct::TypeError
 ```
 
 ### Interface
@@ -200,7 +200,7 @@ Foo = TypeStruct.new(
   # or Interface.new(:read, :write) on required 'type_struct/ext'
 )
 Foo.new(bar: $stdin)
-Foo.new(bar: 1) #=> TypeError
+Foo.new(bar: 1) #=> TypeStruct::TypeError
 ```
 
 ### Mix
@@ -214,7 +214,7 @@ Baz = TypeStruct.new(
 p Baz.new(qux: [1]) #=> #<AAA::Baz qux=[1]>
 p Baz.new(qux: [true, false]) #=> #<AAA::Baz qux=[true, false]>
 p Baz.new(qux: nil) #=> #<AAA::Baz qux=nil>
-p Baz.new(qux: 1) #=> TypeError
+p Baz.new(qux: 1) #=> TypeStruct::TypeError
 p Baz.from_hash(qux: [1, 2, false, true]) #=> #<A::Baz qux=[1, 2, false, true]>
 ```
 
