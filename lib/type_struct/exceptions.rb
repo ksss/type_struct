@@ -1,5 +1,6 @@
 class TypeStruct
   UnionNotFoundError = Class.new(StandardError)
+  TypeError = Class.new(::TypeError)
 
   class MultiTypeError < StandardError
     THIS_LIB_REGEXP = %r{lib/type_struct[./]}

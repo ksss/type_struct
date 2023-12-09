@@ -277,8 +277,8 @@ module TypeStructTest
       a.from_hash(a: 1, b: 'a')
     rescue TypeStruct::MultiTypeError => e
       [
-        %r{lib/type_struct_test.rb:#{line}:in TypeError.*?#a expect ArrayOf\(Integer\) got 1}o,
-        %r{lib/type_struct_test.rb:#{line}:in TypeError.*?#b expect Integer got "a"}o,
+        %r{lib/type_struct_test.rb:#{line}:in TypeStruct::TypeError.*?#a expect ArrayOf\(Integer\) got 1}o,
+        %r{lib/type_struct_test.rb:#{line}:in TypeStruct::TypeError.*?#b expect Integer got "a"}o,
       ].each do |expect|
         unless expect =~ e.message
           t.error("message was changed: #{e.message}")
@@ -503,9 +503,12 @@ module TypeStructTest
     o = Object.new
     begin
       t.new(o)
-    rescue TypeError
+    rescue TypeStruct::TypeError => e
+      unless e.is_a?(::TypeError)
+        t.error("expect TypeStruct::TypeError is inherit of TypeError")
+      end
     else
-      t.error("expect TypeError")
+      t.error("expect TypeStruct::TypeError")
     end
     def o.to_hash
       {foo: "a"}
