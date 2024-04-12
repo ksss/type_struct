@@ -64,7 +64,11 @@ class TypeStruct
   module ClassMethods
     def from_hash(arg)
       unless h = Hash.try_convert(arg)
-        raise TypeError, "no implicit conversion from #{arg} to Hash"
+        begin
+          raise TypeError, "no implicit conversion from #{arg} to Hash"
+        rescue => e
+          raise TypeStruct::MultiTypeError, [e]
+        end
       end
       args = {}
       errors = []

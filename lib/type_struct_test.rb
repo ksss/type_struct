@@ -255,11 +255,11 @@ module TypeStructTest
     o = Object.new
     begin
       a.from_hash(o)
-    rescue TypeError => e
+    rescue TypeStruct::MultiTypeError => e
     rescue => e
       t.error("Unexpected error #{e.class}")
     else
-      t.error("should raise TypeError")
+      t.error("should raise MultiTypeError")
     end
 
     def o.to_hash
