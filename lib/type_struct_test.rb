@@ -226,6 +226,13 @@ module TypeStructTest
     else
       t.error("Bar.baz is not able to nil")
     end
+
+    begin
+      foo.from_hash(bar: [{ baz: nil }])
+    rescue TypeStruct::MultiTypeError
+    else
+      t.error("Should raise MultiTypeError")
+    end
   end
 
   def test_s_from_hash_with_non_alphabet(t)
