@@ -220,7 +220,7 @@ p Baz.from_hash(qux: [1, 2, false, true]) #=> #<A::Baz qux=[1, 2, false, true]>
 
 ## Auto Generator
 
-```json
+```rb
 $ echo '{"posts": [{"number":10491,"name":"ksss"}]}' | ruby -r type_struct/generator/json
 Post = TypeStruct.new(
   number: Integer,
