@@ -17,6 +17,7 @@ class TypeStruct
         b = e.backtrace_locations.find do |b|
           b.absolute_path !~ THIS_LIB_REGEXP
         end
+        next unless b&.absolute_path
         pathname = Pathname.new(b.absolute_path)
         relative_path = if pathname.absolute? && PWD.absolute?
           pathname.relative_path_from(PWD)
